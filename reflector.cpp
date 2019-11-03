@@ -14,7 +14,7 @@ Reflector::Reflector(const char* configFname){
 
 void Reflector::setDefaultMappings(){
   for(int position = 0; position < NUM_LETTERS_IN_ALPHABET; position ++)
-    connections[position] = defaultMappingValue;
+    mappings[position] = defaultMappingValue;
 }
 
 void Reflector::setMappingsFromFile(const char* configFname){
@@ -34,18 +34,21 @@ void Reflector::setMappingsFromFile(const char* configFname){
       throw INVALID_INDEX;
     // Check not mapping index to itself and that it has not been previously
     // assigned (the current value at the index is not the defaultMappingValue)
-    if(index1 == index2 || connections[index1] != defaultMappingValue ||
-        connections[index2] != defaultMappingValue){
+    if(index1 == index2 || mappings[index1] != defaultMappingValue ||
+        mappings[index2] != defaultMappingValue){
           throw INVALID_REFLECTOR_MAPPING;
         }
     // Update mapping
-    connections[index1] = index2;
-    connections[index2] = index1;
+    mappings[index1] = index2;
+    mappings[index2] = index1;
 
+    // Read in next indicies
     index1 = getNextInt(inputStream);
     index2 = getNextInt(inputStream);
     }
 
+  // If this test passes then as no repeated mappings are allowed all indicies
+  // must have been mapped
   if(numMappingsReadIn!=(NUM_LETTERS_IN_ALPHABET/2)){
     throw INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
   }
@@ -55,8 +58,8 @@ void Reflector::setMappingsFromFile(const char* configFname){
 
 
 
-int Reflector::get_mapping(const int index){
-  return connections[index];
+int Reflector::getMapping(const int index){
+  return mappings[index];
 }
 
 
@@ -65,7 +68,7 @@ int main(){
   try{
     Reflector test = Reflector("reflectors/nonNumeric.rf");
     for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-      std::cout << i << " " << test.get_mapping(i) << std::endl;
+      std::cout << i << " " << test.getMapping(i) << std::endl;
   }
   catch(int e){
     std::cout << "Caught an exception " << e;

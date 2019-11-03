@@ -16,7 +16,7 @@ Plugboard::Plugboard(const char* configFname){
 void Plugboard::setDefaultMappings(){
   // Default mapping is each index to itself
   for(int index = 0; index < NUM_LETTERS_IN_ALPHABET; index ++)
-    connections[index] = index;
+    mappings[index] = index;
 }
 
 
@@ -46,19 +46,19 @@ void Plugboard::setMappingsFromFile(const char* configFname){
       throw INVALID_INDEX;
     // Check not mapping index to itself and that it has not been previously
     // been set
-    if(index == mapping || connections[index] != index)
+    if(index == mapping || mappings[index] != index)
       throw IMPOSSIBLE_PLUGBOARD_CONFIGURATION;
 
     // Update mapping
-    connections[index] = mapping;
+    mappings[index] = mapping;
     }
 
   inputStream.close();
 }
 
 
-int Plugboard::get_mapping(const int index){
-  return connections[index];
+int Plugboard::getMapping(const int index){
+  return mappings[index];
 }
 
 
@@ -67,7 +67,7 @@ int main(){
   try{
     Plugboard test = Plugboard("plugboards/oddNumber.pb");
     for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-      std::cout << i << " " << test.get_mapping(i) << std::endl;
+      std::cout << i << " " << test.getMapping(i) << std::endl;
   }
   catch(int e){
     std::cout << "Caught an exception " << e;

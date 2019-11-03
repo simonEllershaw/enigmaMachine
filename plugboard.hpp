@@ -1,5 +1,5 @@
 class Plugboard{
-  int connections[26];
+  int mappings[26];
 
   /* Set connection */
   void setDefaultMappings();
@@ -11,5 +11,5 @@ public:
   Plugboard(const char* configFname);
 
   /* Returns plugboard mapping of an index */
-  int get_mapping(const int index);
+  int getMapping(const int index);
 };

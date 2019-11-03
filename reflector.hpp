@@ -1,5 +1,5 @@
 class Reflector{
-  int connections[26];
+  int mappings[26];
   int defaultMappingValue = -1;
 
   /* Set all connections to have a value of -1 so it can be detected if they
@@ -14,5 +14,5 @@ public:
   Reflector(const char* configFname);
 
   /* Returns reflector mapping of an index */
-  int get_mapping(const int index);
+  int getMapping(const int index);
 };
