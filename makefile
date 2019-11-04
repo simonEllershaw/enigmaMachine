@@ -4,10 +4,15 @@ plugboard: plugboard.o utils.o
 reflector: reflector.o utils.o
 	g++ reflector.o utils.o -o reflector
 
+rotor: rotor.o utils.o
+	g++ rotor.o utils.o -o rotor
+
 %.o: %.cpp
 	g++ -Wall -g -c $<
 
 plugboard.o: plugboard.hpp utils.hpp errors.h
+
+rotor.o: rotor.hpp utils.hpp errors.h
 
 reflector.o: reflector.hpp utils.hpp errors.h
 

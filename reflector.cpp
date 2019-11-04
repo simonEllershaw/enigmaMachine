@@ -1,6 +1,5 @@
 #include "reflector.hpp"
 #include "errors.h"
-#include "utils.hpp"
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
@@ -8,13 +7,13 @@
 
 
 Reflector::Reflector(const char* configFname){
-  setDefaultMappings();
+  setMappingsToNotSet();
   setMappingsFromFile(configFname);
 }
 
-void Reflector::setDefaultMappings(){
+void Reflector::setMappingsToNotSet(){
   for(int position = 0; position < NUM_LETTERS_IN_ALPHABET; position ++)
-    mappings[position] = defaultMappingValue;
+    mappings[position] = VALUE_NOT_SET;
 }
 
 void Reflector::setMappingsFromFile(const char* configFname){
@@ -22,6 +21,9 @@ void Reflector::setMappingsFromFile(const char* configFname){
   int index1, index2, numMappingsReadIn;
 
   inputStream.open(configFname);
+  if(inputStream.fail())
+    throw ERROR_OPENING_CONFIGURATION_FILE;
+    
   index1 = getNextInt(inputStream);
   index2 = getNextInt(inputStream);
 
@@ -34,8 +36,8 @@ void Reflector::setMappingsFromFile(const char* configFname){
       throw INVALID_INDEX;
     // Check not mapping index to itself and that it has not been previously
     // assigned (the current value at the index is not the defaultMappingValue)
-    if(index1 == index2 || mappings[index1] != defaultMappingValue ||
-        mappings[index2] != defaultMappingValue){
+    if(index1 == index2 || mappings[index1] != VALUE_NOT_SET ||
+        mappings[index2] != VALUE_NOT_SET){
           throw INVALID_REFLECTOR_MAPPING;
         }
     // Update mapping

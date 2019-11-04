@@ -1,6 +1,5 @@
 #include "plugboard.hpp"
 #include "errors.h"
-#include "utils.hpp"
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
@@ -25,6 +24,8 @@ void Plugboard::setMappingsFromFile(const char* configFname){
   int mapping, index;
 
   inputStream.open(configFname);
+  if(inputStream.fail())
+    throw ERROR_OPENING_CONFIGURATION_FILE;
 
   // Get pairs of ints from file the first is the index and the second the
   // new mapping of that index
