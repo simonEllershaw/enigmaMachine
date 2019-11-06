@@ -1,5 +1,8 @@
-test: test.o rotor.o reflector.o plugboard.o utils.o
-	g++ test.o rotor.o reflector.o utils.o plugboard.o -o test.exe
+enigma: enigma.o rotor.o reflector.o plugboard.o utils.o
+	g++ enigma.o rotor.o reflector.o utils.o plugboard.o -o enigma
+
+test: test.o enigma.o rotor.o reflector.o plugboard.o utils.o
+	g++ test.o enigma.o rotor.o reflector.o utils.o plugboard.o -o test.exe
 
 
 
@@ -16,7 +19,9 @@ reflector.o: reflector.hpp utils.hpp errors.h
 
 utils.o: utils.hpp errors.h
 
-test.o: test.cpp rotor.hpp utils.hpp
+test.o: test.cpp utils.hpp
+
+enigma.o: enigma.hpp
 
 clean:
 	rm -f *.o *.exe

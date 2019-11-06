@@ -2,7 +2,8 @@
 #include "reflector.hpp"
 #include "plugboard.hpp"
 #include <iostream>
-
+#include "enigma.hpp"
+#include <vector>
 
 void testPlugboardLoading(const char* configFname, const char* message){
   try{
@@ -134,5 +135,8 @@ int main(){
   std::cout << "Rotate once: (forward mappings):" << std::endl;
   for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
     std::cout << i << " " << testRotor.getFowardMapping(i) << std::endl;
+
+
+////////////////////////// Enigma Testing /////////////////////////////////////
 
 }

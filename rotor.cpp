@@ -29,7 +29,8 @@ int Rotor::getFowardMapping(const int index){
   if(index < 0 || index >= NUM_LETTERS_IN_ALPHABET)
     throw INVALID_INDEX;
   // Get mapping at index adjusted for position of rotor
-  return mappings[(index + positionAtOrigin) % NUM_LETTERS_IN_ALPHABET];
+  return mappings[(index + positionAtOrigin) % NUM_LETTERS_IN_ALPHABET]
+          - positionAtOrigin;
 }
 
 int Rotor::getBackwardMapping(const int mapping){
@@ -39,7 +40,7 @@ int Rotor::getBackwardMapping(const int mapping){
     throw INVALID_INDEX;
 
   // Find index of mapping
-  for(; mappings[index] != mapping && index < NUM_LETTERS_IN_ALPHABET; index++);
+  for(; mappings[index] != mapping + positionAtOrigin && index < NUM_LETTERS_IN_ALPHABET; index++);
 
   // Check an index is found
   if(index >= NUM_LETTERS_IN_ALPHABET)
