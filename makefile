@@ -1,11 +1,9 @@
-plugboard: plugboard.o utils.o
-	g++ plugboard.o utils.o -o plugboard
+test: test.o rotor.o reflector.o plugboard.o utils.o
+	g++ test.o rotor.o reflector.o utils.o plugboard.o -o test.exe
 
-reflector: reflector.o utils.o
-	g++ reflector.o utils.o -o reflector
 
-rotor: rotor.o utils.o
-	g++ rotor.o utils.o -o rotor
+
+
 
 %.o: %.cpp
 	g++ -Wall -g -c $<
@@ -17,6 +15,8 @@ rotor.o: rotor.hpp utils.hpp errors.h
 reflector.o: reflector.hpp utils.hpp errors.h
 
 utils.o: utils.hpp errors.h
+
+test.o: test.cpp rotor.hpp utils.hpp
 
 clean:
 	rm -f *.o *.exe

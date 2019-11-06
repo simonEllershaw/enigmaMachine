@@ -27,7 +27,10 @@ public:
   Rotor(const char* configFname, const int startingPosition);
 
   /* Returns rotor mapping of an index */
-  int getMapping(const int index);
+  int getFowardMapping(const int index);
+
+  int getBackwardMapping(const int mapping);
+
 
   /* Returns true if a notch is at the origin position, otherwise false */
   bool aNotchIsAtOrigin();

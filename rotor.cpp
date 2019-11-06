@@ -24,8 +24,29 @@ Rotor::Rotor(const char* configFname, const int startingPosition){
   inputStream.close();
 }
 
-int Rotor::getMapping(const int index){
+int Rotor::getFowardMapping(const int index){
+  // Check index is betweeen 0-NUM_LETTERS_IN_ALPHABET
+  if(index < 0 || index >= NUM_LETTERS_IN_ALPHABET)
+    throw INVALID_INDEX;
+  // Get mapping at index adjusted for position of rotor
   return mappings[(index + positionAtOrigin) % NUM_LETTERS_IN_ALPHABET];
+}
+
+int Rotor::getBackwardMapping(const int mapping){
+  int index = 0;
+  // Check mapping is betweeen 0-NUM_LETTERS_IN_ALPHABET
+  if(mapping < 0 || mapping >= NUM_LETTERS_IN_ALPHABET)
+    throw INVALID_INDEX;
+
+  // Find index of mapping
+  for(; mappings[index] != mapping && index < NUM_LETTERS_IN_ALPHABET; index++);
+
+  // Check an index is found
+  if(index >= NUM_LETTERS_IN_ALPHABET)
+    throw INVALID_ROTOR_MAPPING;
+
+  // Account for position of rotor
+  return (index - positionAtOrigin) % 26;
 }
 
 bool Rotor::aNotchIsAtOrigin(){
@@ -44,24 +65,18 @@ void Rotor::setMappingsToNotSet(){
     mappings[position] = VALUE_NOT_SET;
   }
 
-//Comments need updating
-
-/* Set mapping from config file */
 void Rotor::setMappingsFromFile(std::ifstream& inputStream){
   int mapping, index;
-  bool prevSetAsOutput[26] = {0};
+  bool prevSetAsOutput[26] = {0}; // Allows checking output not already mapped
 
-
-  // Get pairs of ints from file these are the two indicies to be mapped to
-  // each other
+  // Get 26 ints check the int is valid and set as rotor mapping
   for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++){
-    // Read in next indicies
     mapping = getNextInt(inputStream);
+
     // Check input mappings within range 0-25
     if(mapping < 0 || mapping >= NUM_LETTERS_IN_ALPHABET)
       throw INVALID_INDEX;
-    // Check not mapping index to itself and that it has not been previously
-    // assigned (the current value at the index is not the defaultMappingValue)
+    // Check mapping has not previously been set as output
     if(prevSetAsOutput[mapping]){
           throw INVALID_ROTOR_MAPPING;
         }
@@ -69,12 +84,9 @@ void Rotor::setMappingsFromFile(std::ifstream& inputStream){
     // Update mappings
     mappings[index] = mapping;
     prevSetAsOutput[mapping] = true;
-
-
     }
 
-  // If this test passes then as no repeated mappings are allowed all indicies
-  // must have been mapped
+  // If inputStream fails less than 26 ints present in .rot file
   if(inputStream.fail()){
     throw INVALID_ROTOR_MAPPING;
   }
@@ -85,15 +97,12 @@ void Rotor::setNotchesFromFile(std::ifstream& inputStream){
 
   notchPosition = getNextInt(inputStream);
 
-  // Get pairs of ints from file these are the two indicies to be mapped to
-  // each other
+  // Get remaing ints from .rot file and assign as notch positions
   while(!inputStream.fail()){
-
     // Check input mappings within range 0-25
     if(notchPosition < 0 || notchPosition >= NUM_LETTERS_IN_ALPHABET)
       throw INVALID_INDEX;
-    // Check not mapping index to itself and that it has not been previously
-    // assigned (the current value at the index is not the defaultMappingValue)
+    // Check notch only set once
     if(notches[notchPosition]){
           throw INVALID_ROTOR_MAPPING;
         }
@@ -104,19 +113,4 @@ void Rotor::setNotchesFromFile(std::ifstream& inputStream){
     // Read in next indicies
     notchPosition = getNextInt(inputStream);
     }
-}
-
-
-
-// Interim test programe
-int main(){
-  try{
-    Rotor test = Rotor("testFiles/rotors/asdasd.rot", 0);
-    for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-      std::cout << i << " " << test.getMapping(i) << std::endl;
-  }
-  catch(int e){
-    std::cout << "Caught an exception " << e;
-  }
-  return 0;
 }

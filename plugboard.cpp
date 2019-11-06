@@ -61,16 +61,3 @@ void Plugboard::setMappingsFromFile(const char* configFname){
 int Plugboard::getMapping(const int index){
   return mappings[index];
 }
-
-
-// Interim test programe
-int main(){
-  try{
-    Plugboard test = Plugboard("plugboards/oddNumber.pb");
-    for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-      std::cout << i << " " << test.getMapping(i) << std::endl;
-  }
-  catch(int e){
-    std::cout << "Caught an exception " << e;
-  }
-}

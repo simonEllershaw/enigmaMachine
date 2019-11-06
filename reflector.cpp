@@ -23,7 +23,7 @@ void Reflector::setMappingsFromFile(const char* configFname){
   inputStream.open(configFname);
   if(inputStream.fail())
     throw ERROR_OPENING_CONFIGURATION_FILE;
-    
+
   index1 = getNextInt(inputStream);
   index2 = getNextInt(inputStream);
 
@@ -62,17 +62,4 @@ void Reflector::setMappingsFromFile(const char* configFname){
 
 int Reflector::getMapping(const int index){
   return mappings[index];
-}
-
-
-// Interim test programe
-int main(){
-  try{
-    Reflector test = Reflector("reflectors/nonNumeric.rf");
-    for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-      std::cout << i << " " << test.getMapping(i) << std::endl;
-  }
-  catch(int e){
-    std::cout << "Caught an exception " << e;
-  }
 }
