@@ -19,6 +19,8 @@ public:
 
   /* Returns reflector mapping of an index */
   int getMapping(const int index);
+
+  void print();
 };
 
 #endif

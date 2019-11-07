@@ -18,7 +18,12 @@ public:
   Plugboard(const char* configFname);
 
   /* Returns plugboard mapping of an index */
-  int getMapping(const int index);
+  int getForwardMapping(const int index);
+
+  /* Returns plugboard index from an input mapping */
+  int getBackwardMapping(const int mapping);
+
+  void print();
 };
 
 #endif

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <exception>
+#include <iomanip>
+
 
 
 Reflector::Reflector(const char* configFname){
@@ -62,4 +64,11 @@ void Reflector::setMappingsFromFile(const char* configFname){
 
 int Reflector::getMapping(const int index){
   return mappings[index];
+}
+
+void Reflector::print(){
+  std::cout << std::setw(MAPPING_INDENT) << std::left << "Reflector: ";
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+    std::cout << std::setw(DIGIT_SPACING) << std::right << getMapping(i);
+  std::cout << std::endl;
 }

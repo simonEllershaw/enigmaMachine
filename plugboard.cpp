@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <exception>
+#include <iomanip>
 
 
 Plugboard::Plugboard(const char* configFname){
@@ -52,12 +53,26 @@ void Plugboard::setMappingsFromFile(const char* configFname){
 
     // Update mapping
     mappings[index] = mapping;
+    mappings[mapping] = index;
     }
 
   inputStream.close();
 }
 
 
-int Plugboard::getMapping(const int index){
+int Plugboard::getForwardMapping(const int index){
   return mappings[index];
+}
+
+int Plugboard::getBackwardMapping(const int mapping){
+  int index = 0;
+  for(; mappings[index] != mapping; index++);
+  return index;
+}
+
+void Plugboard::print(){
+  std::cout << std::setw(MAPPING_INDENT) << std::left << "Plugboard: ";
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+    std::cout << std::setw(DIGIT_SPACING) << std::right << getForwardMapping(i);
+  std::cout << std::endl;
 }

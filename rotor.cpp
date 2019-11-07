@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <exception>
+#include <iomanip>
+
 
 
 //////////////////////// Public Functions /////////////////////////////////////
@@ -24,28 +26,19 @@ Rotor::Rotor(const char* configFname, const int startingPosition){
   inputStream.close();
 }
 
-int Rotor::getFowardMapping(const int index){
+int Rotor::getForwardMapping(const int index){
   // Check index is betweeen 0-NUM_LETTERS_IN_ALPHABET
   if(index < 0 || index >= NUM_LETTERS_IN_ALPHABET)
     throw INVALID_INDEX;
   // Get mapping at index adjusted for position of rotor
   return mappings[(index + positionAtOrigin) % NUM_LETTERS_IN_ALPHABET]
-          - positionAtOrigin;
+          - positionAtOrigin % NUM_LETTERS_IN_ALPHABET;
 }
 
 int Rotor::getBackwardMapping(const int mapping){
   int index = 0;
-  // Check mapping is betweeen 0-NUM_LETTERS_IN_ALPHABET
-  if(mapping < 0 || mapping >= NUM_LETTERS_IN_ALPHABET)
-    throw INVALID_INDEX;
-
   // Find index of mapping
-  for(; mappings[index] != mapping + positionAtOrigin && index < NUM_LETTERS_IN_ALPHABET; index++);
-
-  // Check an index is found
-  if(index >= NUM_LETTERS_IN_ALPHABET)
-    throw INVALID_ROTOR_MAPPING;
-
+  for(; mappings[index] != (mapping + positionAtOrigin) % 26; index++);
   // Account for position of rotor
   return (index - positionAtOrigin) % 26;
 }
@@ -56,6 +49,17 @@ bool Rotor::aNotchIsAtOrigin(){
 
 void Rotor::rotateRotor(){
   positionAtOrigin = (positionAtOrigin + 1) % NUM_LETTERS_IN_ALPHABET; // Not sure if correct direction
+}
+
+void Rotor::print(){
+  std::cout << std::setw(MAPPING_INDENT) << std::left << "Rotor: ";
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+    std::cout << std::setw(DIGIT_SPACING) << std::right << mappings[i];
+  std::cout << std::endl;
+  std::cout << std::setw(MAPPING_INDENT) << std::left << "Notches: ";
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+    std::cout << std::setw(DIGIT_SPACING) << std::right << notches[i];
+  std::cout << " Position at origin: " << positionAtOrigin << std::endl;
 }
 
 
@@ -114,4 +118,6 @@ void Rotor::setNotchesFromFile(std::ifstream& inputStream){
     // Read in next indicies
     notchPosition = getNextInt(inputStream);
     }
+
+
 }

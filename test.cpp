@@ -8,9 +8,8 @@
 void testPlugboardLoading(const char* configFname, const char* message){
   try{
     std::cout << message << ":" << std::endl;
-    Plugboard test = Plugboard(configFname);
-    for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-      std::cout << i << " " << test.getMapping(i) << std::endl;
+    Plugboard testPlugboard = Plugboard(configFname);
+    testPlugboard.print();
   }
   catch(int e){
     std::cout << "Caught an exception " << e << std::endl;;
@@ -21,8 +20,7 @@ void testReflectorLoading(const char* configFname, const char* message){
   try{
     std::cout << message << ":" << std::endl;
     Reflector testReflector = Reflector(configFname);
-    for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-      std::cout << i << " " << testReflector.getMapping(i) << std::endl;
+    testReflector.print();
   }
   catch(int e){
     std::cout << "Caught an exception " << e << std::endl;;
@@ -35,8 +33,7 @@ void testRotorLoading(const char* configFname, const char* message){
     std::cout << message << ":" << std::endl;
     Rotor testRotor = Rotor(configFname, 0);
     std::cout << "Loaded rotor mappings:" << std::endl;
-    for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-      std::cout << i << " " << testRotor.getFowardMapping(i) << std::endl;
+    testRotor.print();
   }
   catch(int e){
     std::cout << "Caught an exception " << e << std::endl;
@@ -120,23 +117,14 @@ int main(){
   // Rotor with notch at 0, 13
   Rotor testRotor = Rotor("rotors/V.rot", 0);
 
-  std::cout << "Forward mappings:" << std::endl;
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-    std::cout << i << " " << testRotor.getFowardMapping(i) << std::endl;
-
   std::cout << "Reverse mappings:" << std::endl;
   for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
     std::cout << i << " " << testRotor.getBackwardMapping(i) << std::endl;
 
-  std::cout << "Peg at position 0: " << testRotor.aNotchIsAtOrigin()
-            << std::endl;
-
+  std::cout << "Current state:" << std::endl;
+  testRotor.print();
   testRotor.rotateRotor();
-  std::cout << "Rotate once: (forward mappings):" << std::endl;
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-    std::cout << i << " " << testRotor.getFowardMapping(i) << std::endl;
-
-
-////////////////////////// Enigma Testing /////////////////////////////////////
+  std::cout << "Rotate once:" << std::endl;
+  testRotor.print();
 
 }

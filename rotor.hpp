@@ -27,7 +27,7 @@ public:
   Rotor(const char* configFname, const int startingPosition);
 
   /* Returns rotor mapping of an index */
-  int getFowardMapping(const int index);
+  int getForwardMapping(const int index);
 
   int getBackwardMapping(const int mapping);
 
@@ -37,6 +37,8 @@ public:
 
   /* Implements rotor rotation by updating indexAtOrigin */
   void rotateRotor();
+
+  void print();
 };
 
 #endif
