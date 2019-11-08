@@ -8,7 +8,7 @@
 
 
 
-Reflector::Reflector(const char* configFname){
+Reflector::Reflector(std::string configFname){
   setMappingsToNotSet();
   setMappingsFromFile(configFname);
 }
@@ -18,16 +18,17 @@ void Reflector::setMappingsToNotSet(){
     mappings[position] = VALUE_NOT_SET;
 }
 
-void Reflector::setMappingsFromFile(const char* configFname){
+void Reflector::setMappingsFromFile(std::string configFname){
   std::ifstream inputStream;
   int index1, index2, numMappingsReadIn;
+  std::string errorLocation = "reflector file: " + configFname;
 
   inputStream.open(configFname);
   if(inputStream.fail())
     throw ERROR_OPENING_CONFIGURATION_FILE;
 
-  index1 = getNextInt(inputStream);
-  index2 = getNextInt(inputStream);
+  index1 = getNextInt(inputStream, errorLocation);
+  index2 = getNextInt(inputStream, errorLocation);
 
   // Get pairs of ints from file these are the two indicies to be mapped to
   // each other
@@ -47,13 +48,14 @@ void Reflector::setMappingsFromFile(const char* configFname){
     mappings[index2] = index1;
 
     // Read in next indicies
-    index1 = getNextInt(inputStream);
-    index2 = getNextInt(inputStream);
+    index1 = getNextInt(inputStream, errorLocation);
+    index2 = getNextInt(inputStream, errorLocation);
     }
 
   // If this test passes then as no repeated mappings are allowed all indicies
   // must have been mapped
   if(numMappingsReadIn!=(NUM_LETTERS_IN_ALPHABET/2)){
+    std::cout << "Insufficient number of mappings in " << errorLocation;
     throw INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
   }
 

@@ -3,6 +3,7 @@
 
 #include "utils.hpp"
 #include <fstream>
+#include <string>
 
 class Rotor{
   int mappings[NUM_LETTERS_IN_ALPHABET];
@@ -13,10 +14,12 @@ class Rotor{
   void setMappingsToNotSet();
 
   /* Set mapping from config filestream */
-  void setMappingsFromFile(std::ifstream& inputStream);
+  void setMappingsFromFStream(std::ifstream& inputStream,
+                              std::string errorLocation);
 
   /* Set notch values from config filestream */
-  void setNotchesFromFile(std::ifstream& inputStream);
+  void setNotchesFromFStream(std::ifstream& inputStream,
+                            std::string errorLocation);
 
   /* Returns the indexed accounting for rotor overflow e.g. -1->25 and 26->0 */
   int mapOverflow(int index);
@@ -27,7 +30,7 @@ public:
   * Config file should be of the form: index mapping x13 notch1 notch2 .. notchN
   * See rotors/I.rot for an example
   */
-  Rotor(const char* configFname, const int startingPosition);
+  Rotor(std::string configFname, const int startingPosition);
 
   /* Returns rotor mapping of an index */
   int getForwardMapping(const int index);

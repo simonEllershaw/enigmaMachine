@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <fstream>
+#include <string>
 
 const int NUM_LETTERS_IN_ALPHABET = 26;
 
@@ -13,6 +14,9 @@ const int DIGIT_SPACING = 3;
 
 /* Returns next int (can be larger than one digit). If next char is not a digit
   a NON_NUMERIC_CHARACTER error will be thrown */
-int getNextInt(std::ifstream& inputStream);
+int getNextInt(std::ifstream& inputStream, std::string errorLocation);
+
+/* Prints error message in a standard format */
+void printErrorMessage(std::string errorMessage);
 
 #endif

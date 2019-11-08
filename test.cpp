@@ -83,6 +83,8 @@ int main(){
                     "Fail- too few inputs");
   testReflectorLoading("testFiles/reflectors/repeatedMapping.rf",
                     "Fail- repeated mapping");
+  testReflectorLoading("testFiles/reflectors/tooManyInputs.rf",
+                    "Fail- too many inputs");
   std::cout << std::endl;
 
   std::cout << "///////////////// Rotor Testing //////////////////////////////"

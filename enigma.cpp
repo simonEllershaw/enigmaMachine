@@ -10,27 +10,30 @@
 const int CAP_A_ASCII_VALUE = int('A');
 const int MAX_INPUT_SIZE = 80;
 
-Enigma::Enigma(const char* plugboardFname, const char* reflectorFname,
-      std::vector<const char*> rotorFnames, const char* rotorPositionsFname){
+Enigma::Enigma(std::string plugboardFname, std::string reflectorFname,
+              std::vector<std::string> rotorFnames,
+              std::string rotorPositionsFname){
 
   plugboard = new Plugboard(plugboardFname);
   reflector = new Reflector(reflectorFname);
   setRotorVector(rotorPositionsFname, rotorFnames);
 }
 
-void Enigma::setRotorVector(const char* rotorPositionsFname,
-                          std::vector<const char*> rotorFnames){
+void Enigma::setRotorVector(std::string rotorPositionsFname,
+                          std::vector<std::string> rotorFnames){
   std::ifstream rotorPositionStream;
   int rotorPosition;
+  std::string errorLocation = "rotor position file: "+rotorPositionsFname;
 
   rotorPositionStream.open(rotorPositionsFname);
   if(rotorPositionStream.fail()){
+    printErrorMessage("Could not open " + rotorPositionsFname);
     throw ERROR_OPENING_CONFIGURATION_FILE;
   }
 
   for(auto fname = rotorFnames.begin(); fname != rotorFnames.end();
       ++fname){
-      rotorPosition = getNextInt(rotorPositionStream);
+      rotorPosition = getNextInt(rotorPositionStream, errorLocation);
       checkRotorPositionIsValid(rotorPositionStream, rotorPosition);
       rotorVector.push_back(new Rotor(*fname, rotorPosition));
     }
@@ -97,7 +100,7 @@ Enigma::~Enigma(){
 }
 
 
-void getRotorFnamesFromCmdLine(std::vector<const char*>& rotorFnames, int argc,
+void getRotorFnamesFromCmdLine(std::vector<std::string>& rotorFnames, int argc,
                               char**argv){
   for(int argNumber = 3; argNumber < argc-1; argNumber++)
     rotorFnames.push_back(argv[argNumber]);
@@ -114,48 +117,17 @@ void IOEnigmaInterface(Enigma* enigma){
   }
 }
 
-void outputErrorMessage(const int e){
-  using namespace std;
-  cout << endl << "ERROR: ";
-  switch(e){
-    case 1:
-      cout << "INSUFFICIENT_NUMBER_OF_PARAMETERS"; break;
-    case 2:
-      cout << "INVALID_INPUT_CHARACTER"; break;
-    case 3:
-      cout << "INVALID_INDEX"; break;
-    case 4:
-      cout << "NON_NUMERIC_CHARACTER"; break;
-    case 5:
-      cout << "IMPOSSIBLE_PLUGBOARD_CONFIGURATION"; break;
-    case 6:
-      cout << "INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS"; break;
-    case 7:
-      cout << "INVALID_ROTOR_MAPPING"; break;
-    case 8:
-      cout << "NO_ROTOR_STARTING_POSITION"; break;
-    case 9:
-      cout << "INVALID_REFLECTOR_MAPPING"; break;
-    case 10:
-      cout << "INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS"; break;
-    case 11:
-      cout << "ERROR_OPENING_CONFIGURATION_FILE"; break;
-    default:
-      cout << "UNDEFINED_ERROR_CODE";
-    }
-    cout << endl;
-}
-
-
 int main(int argc, char** argv){
   try{
-    if(argc < 4)
+    if(argc < 4){
+      printErrorMessage("Incorrect number of command line arguments");
       throw INSUFFICIENT_NUMBER_OF_PARAMETERS;
+    }
 
-    std::vector<const char*> rotorFnames;
-    const char* plugboardFname = argv[1];
-    const char* reflectorFname = argv[2];
-    const char* rotorPositionsFname = argv[argc-1];
+    std::vector<std::string> rotorFnames;
+    std::string plugboardFname = argv[1];
+    std::string reflectorFname = argv[2];
+    std::string rotorPositionsFname = argv[argc-1];
     getRotorFnamesFromCmdLine(rotorFnames, argc, argv);
 
     Enigma* enigma = new Enigma(plugboardFname, reflectorFname, rotorFnames,
@@ -165,10 +137,7 @@ int main(int argc, char** argv){
     return 0;
   }
   catch(int e){
-    outputErrorMessage(e);
     return e;
   }
-
-  return 0;
 }
 // ./enigma plugboards/I.pb reflectors/I.rf rotors/I.rot rotors/II.rot rotors/III.rot rotors/I.pos

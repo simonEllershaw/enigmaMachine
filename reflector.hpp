@@ -2,6 +2,7 @@
 #define REFLECTOR_H
 
 #include "utils.hpp"
+#include <string>
 
 class Reflector{
   int mappings[NUM_LETTERS_IN_ALPHABET];
@@ -11,11 +12,11 @@ class Reflector{
   void setMappingsToNotSet();
 
   /* Set mapping from config file */
-  void setMappingsFromFile(const char* configFname);
+  void setMappingsFromFile(std::string configFname);
 public:
   /*Reflector contructor- takes config filename as a parameter
   Config file should be of the for index pa*/
-  Reflector(const char* configFname);
+  Reflector(std::string configFname);
 
   /* Returns reflector mapping of an index */
   int getMapping(const int index);

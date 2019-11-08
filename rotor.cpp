@@ -10,8 +10,9 @@
 
 //////////////////////// Public Functions /////////////////////////////////////
 
-Rotor::Rotor(const char* configFname, const int startingPosition){
+Rotor::Rotor(std::string configFname, const int startingPosition){
   std::ifstream inputStream;
+  std::string errorLocation = "rotor file: " + configFname;
 
   // Non config file dependent setting functions
   positionAtOrigin = startingPosition;
@@ -21,8 +22,8 @@ Rotor::Rotor(const char* configFname, const int startingPosition){
   inputStream.open(configFname);
   if(inputStream.fail())
     throw ERROR_OPENING_CONFIGURATION_FILE;
-  setMappingsFromFile(inputStream);
-  setNotchesFromFile(inputStream);
+  setMappingsFromFStream(inputStream, errorLocation);
+  setNotchesFromFStream(inputStream, errorLocation);
   inputStream.close();
 }
 
@@ -76,13 +77,14 @@ void Rotor::setMappingsToNotSet(){
     mappings[position] = VALUE_NOT_SET;
   }
 
-void Rotor::setMappingsFromFile(std::ifstream& inputStream){
+void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
+                                std::string errorLocation){
   int mapping, index;
   bool prevSetAsOutput[26] = {0}; // Allows checking output not already mapped
 
   // Get 26 ints check the int is valid and set as rotor mapping
   for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++){
-    mapping = getNextInt(inputStream);
+    mapping = getNextInt(inputStream, errorLocation);
 
     // Check input mappings within range 0-25
     if(mapping < 0 || mapping >= NUM_LETTERS_IN_ALPHABET)
@@ -103,10 +105,11 @@ void Rotor::setMappingsFromFile(std::ifstream& inputStream){
   }
 }
 
-void Rotor::setNotchesFromFile(std::ifstream& inputStream){
+void Rotor::setNotchesFromFStream(std::ifstream& inputStream,
+                                std::string errorLocation){
   int notchPosition;
 
-  notchPosition = getNextInt(inputStream);
+  notchPosition = getNextInt(inputStream, errorLocation);
 
   // Get remaing ints from .rot file and assign as notch positions
   while(!inputStream.fail()){
@@ -122,7 +125,7 @@ void Rotor::setNotchesFromFile(std::ifstream& inputStream){
     notches[notchPosition] = true;
 
     // Read in next indicies
-    notchPosition = getNextInt(inputStream);
+    notchPosition = getNextInt(inputStream, errorLocation);
     }
 
 
