@@ -65,26 +65,19 @@ void Enigma::print(){
 char Enigma::encodeChar(char input){
   rotateRotors();
 
-  print();
   int convertedInput = input - CAP_A_ASCII_VALUE;
   if(convertedInput < 0 || convertedInput >= NUM_LETTERS_IN_ALPHABET)
     throw INVALID_INPUT_CHARACTER;
 
-  std::cout << "Input: " << convertedInput <<std::endl;
   // Encoding right to left
   convertedInput = plugboard->getForwardMapping(convertedInput);
-  std::cout << "Plugboard: " << convertedInput << std::endl;
-  for(auto rotor = rotorVector.rbegin(); rotor != rotorVector.rend(); ++rotor){
+  for(auto rotor = rotorVector.rbegin(); rotor != rotorVector.rend(); ++rotor)
     convertedInput = (*rotor)->getForwardMapping(convertedInput);
-    std::cout << "Forward rotor: " << convertedInput << std::endl;}
   convertedInput = reflector->getMapping(convertedInput);
-  std::cout << "Reflector " << convertedInput << std::endl;
   // Encoding left to right
-  for(auto rotor = rotorVector.begin(); rotor != rotorVector.end(); ++rotor){
+  for(auto rotor = rotorVector.begin(); rotor != rotorVector.end(); ++rotor)
     convertedInput = (*rotor)->getBackwardMapping(convertedInput);
-    std::cout << "Backward rotor: " << convertedInput << std::endl;}
   convertedInput = plugboard->getBackwardMapping(convertedInput);
-  std::cout << "Backward plugboard: " << convertedInput << std::endl;
   return char(convertedInput + CAP_A_ASCII_VALUE);
 }
 
@@ -111,30 +104,71 @@ void getRotorFnamesFromCmdLine(std::vector<const char*>& rotorFnames, int argc,
 }
 
 void IOEnigmaInterface(Enigma* enigma){
-  char input[MAX_INPUT_SIZE];
-  std::cout << "Please enter phrase to encrypt in all caps: ";
-  std::cin >> input;
+  using namespace std;
+  std::string input;
+  getline(cin, input, '\n');
 
-  for(int index = 0; input[index] != '\0'; index++)
-    std::cout << enigma->encodeChar(input[index]);
-  std::cout<<std::endl;
+  for(int index = 0; input[index] != '\0'; index++){
+    if(input[index] != ' ')
+      std::cout << enigma->encodeChar(input[index]);
+  }
+  std::cout << std::endl;
+}
+
+void outputErrorMessage(const int e){
+  using namespace std;
+  cout << "ERROR: ";
+  switch(e){
+    case 1:
+      cout << "INSUFFICIENT_NUMBER_OF_PARAMETERS"; break;
+    case 2:
+      cout << "INVALID_INPUT_CHARACTER"; break;
+    case 3:
+      cout << "INVALID_INDEX"; break;
+    case 4:
+      cout << "NON_NUMERIC_CHARACTER"; break;
+    case 5:
+      cout << "IMPOSSIBLE_PLUGBOARD_CONFIGURATION"; break;
+    case 6:
+      cout << "INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS"; break;
+    case 7:
+      cout << "INVALID_ROTOR_MAPPING"; break;
+    case 8:
+      cout << "NO_ROTOR_STARTING_POSITION"; break;
+    case 9:
+      cout << "INVALID_REFLECTOR_MAPPING"; break;
+    case 10:
+      cout << "INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS"; break;
+    case 11:
+      cout << "ERROR_OPENING_CONFIGURATION_FILE"; break;
+    default:
+      cout << "UNDEFINED_ERROR_CODE";
+    }
+    cout << endl;
 }
 
 
 int main(int argc, char** argv){
-  if(argc < 4)
-    throw INSUFFICIENT_NUMBER_OF_PARAMETERS;
+  try{
+    if(argc < 4)
+      throw INSUFFICIENT_NUMBER_OF_PARAMETERS;
 
-  std::vector<const char*> rotorFnames;
-  const char* plugboardFname = argv[1];
-  const char* reflectorFname = argv[2];
-  const char* rotorPositionsFname = argv[argc-1];
-  getRotorFnamesFromCmdLine(rotorFnames, argc, argv);
+    std::vector<const char*> rotorFnames;
+    const char* plugboardFname = argv[1];
+    const char* reflectorFname = argv[2];
+    const char* rotorPositionsFname = argv[argc-1];
+    getRotorFnamesFromCmdLine(rotorFnames, argc, argv);
 
-  Enigma* enigma = new Enigma(plugboardFname, reflectorFname, rotorFnames,
-                              rotorPositionsFname);
+    Enigma* enigma = new Enigma(plugboardFname, reflectorFname, rotorFnames,
+                                rotorPositionsFname);
 
-  IOEnigmaInterface(enigma);
+    IOEnigmaInterface(enigma);
+    return 0;
+  }
+  catch(int e){
+    outputErrorMessage(e);
+    return e;
+  }
 
   return 0;
 }
