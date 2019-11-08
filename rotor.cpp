@@ -30,17 +30,19 @@ int Rotor::getForwardMapping(const int index){
   // Check index is betweeen 0-NUM_LETTERS_IN_ALPHABET
   if(index < 0 || index >= NUM_LETTERS_IN_ALPHABET)
     throw INVALID_INDEX;
+
+  int positionAdjustedIndex = mapOverflow(index + positionAtOrigin);
   // Get mapping at index adjusted for position of rotor
-  return mappings[(index + positionAtOrigin) % NUM_LETTERS_IN_ALPHABET]
-          - positionAtOrigin % NUM_LETTERS_IN_ALPHABET;
+  return mapOverflow(mappings[positionAdjustedIndex] - positionAtOrigin);
 }
 
 int Rotor::getBackwardMapping(const int mapping){
   int index = 0;
   // Find index of mapping
-  for(; mappings[index] != (mapping + positionAtOrigin) % 26; index++);
+  for(; mappings[index] != mapOverflow(mapping + positionAtOrigin)
+      ; index++);
   // Account for position of rotor
-  return (index - positionAtOrigin) % 26;
+  return mapOverflow(index - positionAtOrigin);
 }
 
 bool Rotor::aNotchIsAtOrigin(){
@@ -48,7 +50,7 @@ bool Rotor::aNotchIsAtOrigin(){
 }
 
 void Rotor::rotateRotor(){
-  positionAtOrigin = (positionAtOrigin + 1) % NUM_LETTERS_IN_ALPHABET; // Not sure if correct direction
+  positionAtOrigin = mapOverflow(positionAtOrigin + 1); // Not sure if correct direction
 }
 
 void Rotor::print(){
@@ -64,6 +66,10 @@ void Rotor::print(){
 
 
 //////////////////////////// Private Functions ////////////////////////////////
+
+int Rotor::mapOverflow(int index){
+    return (index + NUM_LETTERS_IN_ALPHABET) % NUM_LETTERS_IN_ALPHABET;
+}
 
 void Rotor::setMappingsToNotSet(){
   for(int position = 0; position < NUM_LETTERS_IN_ALPHABET; position ++)

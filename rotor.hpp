@@ -18,6 +18,9 @@ class Rotor{
   /* Set notch values from config filestream */
   void setNotchesFromFile(std::ifstream& inputStream);
 
+  /* Returns the indexed accounting for rotor overflow e.g. -1->25 and 26->0 */
+  int mapOverflow(int index);
+
 
 public:
   /*Rotor contructor- takes config.rot filename as a parameter
