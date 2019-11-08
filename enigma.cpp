@@ -112,12 +112,11 @@ void IOEnigmaInterface(Enigma* enigma){
     if(input[index] != ' ')
       std::cout << enigma->encodeChar(input[index]);
   }
-  std::cout << std::endl;
 }
 
 void outputErrorMessage(const int e){
   using namespace std;
-  cout << "ERROR: ";
+  cout << endl << "ERROR: ";
   switch(e){
     case 1:
       cout << "INSUFFICIENT_NUMBER_OF_PARAMETERS"; break;
