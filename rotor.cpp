@@ -12,7 +12,7 @@
 
 Rotor::Rotor(std::string configFname, const int startingPosition){
   std::ifstream inputStream;
-  std::string errorLocation = "rotor file: " + configFname;
+  std::string errorLocation = "rotor file " + configFname;
 
   // Non config file dependent setting functions
   positionAtOrigin = startingPosition;
@@ -20,8 +20,10 @@ Rotor::Rotor(std::string configFname, const int startingPosition){
 
   // Config file dependent setting functions
   inputStream.open(configFname);
-  if(inputStream.fail())
+  if(inputStream.fail()){
+    printErrorMessage("Could not open " + configFname);
     throw ERROR_OPENING_CONFIGURATION_FILE;
+  }
   setMappingsFromFStream(inputStream, errorLocation);
   setNotchesFromFStream(inputStream, errorLocation);
   inputStream.close();
@@ -80,7 +82,11 @@ void Rotor::setMappingsToNotSet(){
 void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
                                 std::string errorLocation){
   int mapping, index;
-  bool prevSetAsOutput[26] = {0}; // Allows checking output not already mapped
+  // Allows checking output not already mapped
+  int outputMappings[NUM_LETTERS_IN_ALPHABET];
+
+  for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++)
+    outputMappings[index] = VALUE_NOT_SET;
 
   // Get 26 ints check the int is valid and set as rotor mapping
   for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++){
@@ -90,17 +96,23 @@ void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
     if(mapping < 0 || mapping >= NUM_LETTERS_IN_ALPHABET)
       throw INVALID_INDEX;
     // Check mapping has not previously been set as output
-    if(prevSetAsOutput[mapping]){
+    if(outputMappings[mapping] != VALUE_NOT_SET){
+          printErrorMessage("Invalid mapping of input " + std::to_string(index)+
+                            " to output " + std::to_string(mapping) +" (output "
+                            + std::to_string(mapping)
+                            + " is already mapped to from input "
+                            + std::to_string(outputMappings[mapping]) + " in "
+                            + errorLocation);
           throw INVALID_ROTOR_MAPPING;
         }
 
     // Update mappings
     mappings[index] = mapping;
-    prevSetAsOutput[mapping] = true;
+    outputMappings[mapping] = index;
     }
-
   // If inputStream fails less than 26 ints present in .rot file
   if(inputStream.fail()){
+    printErrorMessage("Not all inputs mapped in " + errorLocation);
     throw INVALID_ROTOR_MAPPING;
   }
 }
@@ -127,6 +139,5 @@ void Rotor::setNotchesFromFStream(std::ifstream& inputStream,
     // Read in next indicies
     notchPosition = getNextInt(inputStream, errorLocation);
     }
-
 
 }

@@ -22,8 +22,8 @@ Enigma::Enigma(std::string plugboardFname, std::string reflectorFname,
 void Enigma::setRotorVector(std::string rotorPositionsFname,
                           std::vector<std::string> rotorFnames){
   std::ifstream rotorPositionStream;
-  int rotorPosition;
-  std::string errorLocation = "rotor position file: "+rotorPositionsFname;
+  int rotorPosition, rotorNumber = 0;
+  std::string errorLocation = "rotor position file " + rotorPositionsFname;
 
   rotorPositionStream.open(rotorPositionsFname);
   if(rotorPositionStream.fail()){
@@ -31,17 +31,24 @@ void Enigma::setRotorVector(std::string rotorPositionsFname,
     throw ERROR_OPENING_CONFIGURATION_FILE;
   }
 
-  for(auto fname = rotorFnames.begin(); fname != rotorFnames.end();
-      ++fname){
+  auto fname = rotorFnames.begin();
+  rotorPosition = getNextInt(rotorPositionStream, errorLocation);
+  while(fname != rotorFnames.end()){
       rotorPosition = getNextInt(rotorPositionStream, errorLocation);
-      checkRotorPositionIsValid(rotorPositionStream, rotorPosition);
+      checkRotorPositionIsValid(rotorPositionStream, rotorPosition, rotorNumber,
+                                errorLocation);
       rotorVector.push_back(new Rotor(*fname, rotorPosition));
+      ++fname; //Error for not enough files??
+      rotorNumber++;
     }
 }
 
 void Enigma::checkRotorPositionIsValid(std::ifstream& rotorPositionStream,
-                                const int rotorPosition){
+                              const int rotorPosition, const int rotorNumber,
+                              std::string errorLocation){
   if(rotorPositionStream.fail()){
+    printErrorMessage("No starting position for rotor " +
+    std::to_string(rotorNumber) + " in " + errorLocation);
     throw NO_ROTOR_STARTING_POSITION;
   }
   else if(rotorPosition < 0 || rotorPosition >= NUM_LETTERS_IN_ALPHABET){
@@ -66,11 +73,18 @@ void Enigma::print(){
 }
 
 char Enigma::encodeChar(char input){
+  int convertedInput;
+
+  if(input < 'A' || input >= 'Z'){
+    printErrorMessage(std::string(1, input) + " is not a valid input character"
+                      "(input characters must be upper case letters A-Z)!");
+    throw INVALID_INPUT_CHARACTER;
+  }
+
   rotateRotors();
 
-  int convertedInput = input - CAP_A_ASCII_VALUE;
-  if(convertedInput < 0 || convertedInput >= NUM_LETTERS_IN_ALPHABET)
-    throw INVALID_INPUT_CHARACTER;
+  convertedInput = input - CAP_A_ASCII_VALUE;
+
 
   // Encoding right to left
   convertedInput = plugboard->getForwardMapping(convertedInput);
@@ -120,7 +134,8 @@ void IOEnigmaInterface(Enigma* enigma){
 int main(int argc, char** argv){
   try{
     if(argc < 4){
-      printErrorMessage("Incorrect number of command line arguments");
+      printErrorMessage("usage: enigma plugboard-file reflector-file"
+                        "(<rotor-file>)* rotor-positions");
       throw INSUFFICIENT_NUMBER_OF_PARAMETERS;
     }
 

@@ -19,7 +19,8 @@ class Enigma{
 
   /* Checks the .pos file supplied is valid, throws exceptions if not */
   void checkRotorPositionIsValid(std::ifstream& rotorPositionStream,
-                                const int rotorPosition);
+                                const int rotorPosition, const int rotorNumber,
+                                std::string errorLocation);
 
    /* Rotates leftmost rotor 1 position, updates rotors to the right if notch at
       the top */
