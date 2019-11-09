@@ -14,5 +14,5 @@ int getNextInt(std::ifstream& inputStream, std::string errorLocation){
 }
 
 void printErrorMessage(std::string errorMessage){
-  std::cerr << errorMessage;
+  std::cerr << errorMessage << std::endl;
 }
