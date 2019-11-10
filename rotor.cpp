@@ -14,7 +14,7 @@ Rotor::Rotor(std::string configFname, const int startingPosition){
   std::ifstream inputStream;
   std::string errorLocation = " for mapping in rotor file " + configFname;
   // Nasty bodge to pass testing
-  std::string errorLocation2 = "in rotor file: " + configFname;
+  std::string errorLocation2 = " in rotor file: " + configFname;
 
   // Non config file dependent setting functions
   positionAtOrigin = startingPosition;
@@ -26,7 +26,7 @@ Rotor::Rotor(std::string configFname, const int startingPosition){
     printErrorMessage("Could not open " + configFname);
     throw ERROR_OPENING_CONFIGURATION_FILE;
   }
-  setMappingsFromFStream(inputStream, errorLocation2);
+  setMappingsFromFStream(inputStream, errorLocation, errorLocation2);
   setNotchesFromFStream(inputStream, errorLocation);
   inputStream.close();
 }
@@ -82,7 +82,8 @@ void Rotor::setMappingsToNotSet(){
   }
 
 void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
-                                std::string errorLocation){
+                                std::string errorLocation,
+                                std::string errorLocation2){
   int mapping, index;
   // Allows checking output not already mapped
   int outputMappings[NUM_LETTERS_IN_ALPHABET];
@@ -94,7 +95,8 @@ void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
   for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++){
     mapping = getNextInt(inputStream, errorLocation);
     if(inputStream.fail()){
-      std::cerr << "Not all inputs mapped" + errorLocation;
+      std::cerr << "Not all inputs mapped" + errorLocation2;
+      throw INVALID_ROTOR_MAPPING;
     }
 
     // Check input mappings within range 0-25
@@ -107,7 +109,7 @@ void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
                             + std::to_string(mapping)
                             + " is already mapped to from input "
                             + std::to_string(outputMappings[mapping]) + ") "
-                            + errorLocation);
+                            + errorLocation2);
           throw INVALID_ROTOR_MAPPING;
         }
 

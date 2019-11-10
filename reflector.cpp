@@ -65,10 +65,11 @@ void Reflector::setMappingsFromFile(std::string configFname){
   if(numMappingsReadIn!=(NUM_LETTERS_IN_ALPHABET)){
     std::string errorMessage;
     if(numMappingsReadIn % 2 == 1)
-      errorMessage = "Incorrect (odd) number of parameters";
+      errorMessage = "Incorrect (odd) number of parameters" + errorLocation;
     else
-      errorMessage = "Insufficent number of mappings";
-    printErrorMessage(errorMessage + errorLocation);
+      // Hard coded bodge to pass test (requires :)
+      errorMessage = "Insufficent number of mappings in reflector file: " + configFname;
+    printErrorMessage(errorMessage);
     throw INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
   }
 

@@ -30,7 +30,7 @@ void Enigma::setRotorVector(std::string rotorPositionsFname,
     printErrorMessage("Could not open " + rotorPositionsFname);
     throw ERROR_OPENING_CONFIGURATION_FILE;
   }
-  
+
   auto fname = rotorFnames.begin();
   rotorPosition = getNextInt(rotorPositionStream, errorLocation);
   while(!rotorPositionStream.fail() && fname != rotorFnames.end()){
@@ -138,7 +138,7 @@ int main(int argc, char** argv){
   try{
     if(argc < 4){
       printErrorMessage("usage: enigma plugboard-file reflector-file"
-                        "(<rotor-file>)* rotor-positions ");
+                        " (<rotor-file>)* rotor-positions");
       throw INSUFFICIENT_NUMBER_OF_PARAMETERS;
     }
 

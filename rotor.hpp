@@ -15,7 +15,8 @@ class Rotor{
 
   /* Set mapping from config filestream */
   void setMappingsFromFStream(std::ifstream& inputStream,
-                              std::string errorLocation);
+                              std::string errorLocation,
+                              std::string errorLocation2);
 
   /* Set notch values from config filestream */
   void setNotchesFromFStream(std::ifstream& inputStream,
