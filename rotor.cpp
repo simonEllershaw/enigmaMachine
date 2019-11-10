@@ -108,7 +108,7 @@ void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
                             " to output " + std::to_string(mapping) +" (output "
                             + std::to_string(mapping)
                             + " is already mapped to from input "
-                            + std::to_string(outputMappings[mapping]) + ") "
+                            + std::to_string(outputMappings[mapping]) + ")"
                             + errorLocation2);
           throw INVALID_ROTOR_MAPPING;
         }
