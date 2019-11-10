@@ -12,7 +12,7 @@
 
 Rotor::Rotor(std::string configFname, const int startingPosition){
   std::ifstream inputStream;
-  std::string errorLocation = "rotor file " + configFname;
+  std::string errorLocation = "for mapping in rotor file " + configFname;
 
   // Non config file dependent setting functions
   positionAtOrigin = startingPosition;
@@ -101,7 +101,7 @@ void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
                             " to output " + std::to_string(mapping) +" (output "
                             + std::to_string(mapping)
                             + " is already mapped to from input "
-                            + std::to_string(outputMappings[mapping]) + " in "
+                            + std::to_string(outputMappings[mapping]) + ") in "
                             + errorLocation);
           throw INVALID_ROTOR_MAPPING;
         }

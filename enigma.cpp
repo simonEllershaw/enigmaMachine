@@ -23,7 +23,7 @@ void Enigma::setRotorVector(std::string rotorPositionsFname,
                           std::vector<std::string> rotorFnames){
   std::ifstream rotorPositionStream;
   int rotorPosition, rotorNumber = 0;
-  std::string errorLocation = "rotor position file " + rotorPositionsFname;
+  std::string errorLocation = "rotor positions file " + rotorPositionsFname;
 
   rotorPositionStream.open(rotorPositionsFname);
   if(rotorPositionStream.fail()){
@@ -33,25 +33,27 @@ void Enigma::setRotorVector(std::string rotorPositionsFname,
 
   auto fname = rotorFnames.begin();
   rotorPosition = getNextInt(rotorPositionStream, errorLocation);
-  while(fname != rotorFnames.end()){
-      rotorPosition = getNextInt(rotorPositionStream, errorLocation);
+  while(!rotorPositionStream.fail()){
       checkRotorPositionIsValid(rotorPositionStream, rotorPosition, rotorNumber,
                                 errorLocation);
       rotorVector.push_back(new Rotor(*fname, rotorPosition));
       ++fname; //Error for not enough files??
       rotorNumber++;
+      rotorPosition = getNextInt(rotorPositionStream, errorLocation);
     }
+  // If when rotorPositionStream fails not all rotors have been initialised
+  // not enough rotor positions where given in the config file
+  if(fname != rotorFnames.end()){
+    printErrorMessage("No starting position for rotor " +
+    std::to_string(rotorNumber) + " in " + errorLocation);
+    throw NO_ROTOR_STARTING_POSITION;
+  }
 }
 
 void Enigma::checkRotorPositionIsValid(std::ifstream& rotorPositionStream,
                               const int rotorPosition, const int rotorNumber,
                               std::string errorLocation){
-  if(rotorPositionStream.fail()){
-    printErrorMessage("No starting position for rotor " +
-    std::to_string(rotorNumber) + " in " + errorLocation);
-    throw NO_ROTOR_STARTING_POSITION;
-  }
-  else if(rotorPosition < 0 || rotorPosition >= NUM_LETTERS_IN_ALPHABET){
+  if(rotorPosition < 0 || rotorPosition >= NUM_LETTERS_IN_ALPHABET){
     throw INVALID_INDEX;
   }
 }
@@ -77,7 +79,7 @@ char Enigma::encodeChar(char input){
 
   if(input < 'A' || input >= 'Z'){
     printErrorMessage(std::string(1, input) + " is not a valid input character"
-                      "(input characters must be upper case letters A-Z)!");
+                      " (input characters must be upper case letters A-Z)!");
     throw INVALID_INPUT_CHARACTER;
   }
 
@@ -135,7 +137,7 @@ int main(int argc, char** argv){
   try{
     if(argc < 4){
       printErrorMessage("usage: enigma plugboard-file reflector-file"
-                        "(<rotor-file>)* rotor-positions");
+                        "(<rotor-file>)* rotor-positions ");
       throw INSUFFICIENT_NUMBER_OF_PARAMETERS;
     }
 

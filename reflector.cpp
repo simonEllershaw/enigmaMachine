@@ -6,8 +6,6 @@
 #include <exception>
 #include <iomanip>
 
-
-
 Reflector::Reflector(std::string configFname){
   setMappingsToNotSet();
   setMappingsFromFile(configFname);
@@ -70,7 +68,7 @@ void Reflector::setMappingsFromFile(std::string configFname){
       additionalInfo = " (odd)";
     else
       additionalInfo = "";
-    printErrorMessage("Incorrect" + additionalInfo+  " number of parameters in "
+    printErrorMessage("Incorrect" + additionalInfo+  " number of mappings in "
                       + errorLocation);
     throw INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
   }
