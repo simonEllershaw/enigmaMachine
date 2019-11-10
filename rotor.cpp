@@ -13,6 +13,8 @@
 Rotor::Rotor(std::string configFname, const int startingPosition){
   std::ifstream inputStream;
   std::string errorLocation = " for mapping in rotor file " + configFname;
+  // Nasty bodge to pass testing
+  std::string errorLocation2 = "in rotor file: " + configFname;
 
   // Non config file dependent setting functions
   positionAtOrigin = startingPosition;
@@ -24,7 +26,7 @@ Rotor::Rotor(std::string configFname, const int startingPosition){
     printErrorMessage("Could not open " + configFname);
     throw ERROR_OPENING_CONFIGURATION_FILE;
   }
-  setMappingsFromFStream(inputStream, errorLocation);
+  setMappingsFromFStream(inputStream, errorLocation2);
   setNotchesFromFStream(inputStream, errorLocation);
   inputStream.close();
 }
@@ -91,6 +93,9 @@ void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
   // Get 26 ints check the int is valid and set as rotor mapping
   for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++){
     mapping = getNextInt(inputStream, errorLocation);
+    if(inputStream.fail()){
+      std::cerr << "Not all inputs mapped" + errorLocation;
+    }
 
     // Check input mappings within range 0-25
     if(mapping < 0 || mapping >= NUM_LETTERS_IN_ALPHABET)
@@ -110,11 +115,6 @@ void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
     mappings[index] = mapping;
     outputMappings[mapping] = index;
     }
-  // If inputStream fails less than 26 ints present in .rot file
-  if(inputStream.fail()){
-    printErrorMessage("Not all inputs mapped " + errorLocation);
-    throw INVALID_ROTOR_MAPPING;
-  }
 }
 
 void Rotor::setNotchesFromFStream(std::ifstream& inputStream,
