@@ -19,7 +19,7 @@ void Reflector::setMappingsToNotSet(){
 void Reflector::setMappingsFromFile(std::string configFname){
   std::ifstream inputStream;
   int index1, index2, numMappingsReadIn = 0;
-  std::string errorLocation = "reflector file " + configFname;
+  std::string errorLocation = " in reflector file " + configFname;
 
   inputStream.open(configFname);
   if(inputStream.fail()){
@@ -52,7 +52,7 @@ void Reflector::setMappingsFromFile(std::string configFname){
                             + " to " + std::string(1, char(index2) + int('A'));
           printErrorMessage("Invalid reflector mapping " +
                             std::to_string(index1) + " to " +
-                            std::to_string(index2)+  " in " + errorLocation);
+                            std::to_string(index2) + errorLocation);
           throw INVALID_REFLECTOR_MAPPING;
         }
     // Update mapping
@@ -63,13 +63,12 @@ void Reflector::setMappingsFromFile(std::string configFname){
   // If this test passes then as no repeated mappings are allowed all indicies
   // must have been mapped
   if(numMappingsReadIn!=(NUM_LETTERS_IN_ALPHABET)){
-    std::string additionalInfo;
+    std::string errorMessage;
     if(numMappingsReadIn % 2 == 1)
-      additionalInfo = " (odd)";
+      errorMessage = "Incorrect (odd) number of parameters ";
     else
-      additionalInfo = "";
-    printErrorMessage("Incorrect" + additionalInfo+  " number of mappings in "
-                      + errorLocation);
+      errorMessage = "Insufficent number of mappings ";
+    printErrorMessage(errorMessage + errorLocation);
     throw INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
   }
 

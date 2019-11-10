@@ -23,7 +23,7 @@ void Plugboard::setDefaultMappings(){
 void Plugboard::setMappingsFromFile(std::string configFname){
   std::ifstream inputStream;
   int mapping, index;
-  std::string errorLocation = "plugboard file " + configFname;
+  std::string errorLocation = " in plugboard file " + configFname;
 
   inputStream.open(configFname);
   if(inputStream.fail()){
@@ -43,7 +43,7 @@ void Plugboard::setMappingsFromFile(std::string configFname){
     mapping = getNextInt(inputStream, errorLocation);
     // If EOF here an odd number of ints have been parsed so throw exception
     if(inputStream.eof()){
-      printErrorMessage("Incorrect number of parameters in " + errorLocation);
+      printErrorMessage("Incorrect number of parameters" + errorLocation);
       throw INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
     }
 

@@ -7,7 +7,7 @@ int getNextInt(std::ifstream& inputStream, std::string errorLocation){
   inputStream >> nextInt;
   // Flag set if last character read in not a digit
   if(inputStream.rdstate() == std::ifstream::failbit){
-    printErrorMessage("Non-numeric character in " + errorLocation);
+    printErrorMessage("Non-numeric character" + errorLocation);
     throw NON_NUMERIC_CHARACTER;
   }
   return nextInt;

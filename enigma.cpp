@@ -23,7 +23,7 @@ void Enigma::setRotorVector(std::string rotorPositionsFname,
                           std::vector<std::string> rotorFnames){
   std::ifstream rotorPositionStream;
   int rotorPosition, rotorNumber = 0;
-  std::string errorLocation = "rotor positions file " + rotorPositionsFname;
+  std::string errorLocation = " in rotor positions file " + rotorPositionsFname;
 
   rotorPositionStream.open(rotorPositionsFname);
   if(rotorPositionStream.fail()){
@@ -45,7 +45,7 @@ void Enigma::setRotorVector(std::string rotorPositionsFname,
   // not enough rotor positions where given in the config file
   if(fname != rotorFnames.end()){
     printErrorMessage("No starting position for rotor " +
-    std::to_string(rotorNumber) + " in " + errorLocation);
+    std::to_string(rotorNumber) + errorLocation);
     throw NO_ROTOR_STARTING_POSITION;
   }
 }
