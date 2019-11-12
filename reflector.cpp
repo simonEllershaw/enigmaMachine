@@ -85,7 +85,7 @@ void Reflector::checkCorrectNumParamsReadIn(int numMappingsReadIn,
   // must have been mapped
   if(numMappingsReadIn!=(NUM_LETTERS_IN_ALPHABET)){
     if(numMappingsReadIn % 2 == 1)
-      additionalInfo = " (odd)";
+      additionalInfo = "(odd) ";
     printErrorMessage("Incorrect " + additionalInfo + "number of mappings"
                       + errorLocation);
     throw INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;

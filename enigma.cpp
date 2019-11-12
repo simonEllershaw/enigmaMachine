@@ -158,5 +158,3 @@ int main(int argc, char** argv){
     return e;
   }
 }
-
-// ./enigma plugboards/I.pb reflectors/I.rf rotors/I.rot rotors/II.rot rotors/III.rot rotors/I.pos

@@ -1,29 +1,17 @@
-enigma: enigma.o rotor.o reflector.o plugboard.o utils.o
-	g++ enigma.o rotor.o reflector.o utils.o plugboard.o -o enigma
+OBJ = enigma.o rotor.o reflector.o plugboard.o utils.o
+EXE = engima
+CXX = g++
+CXXFLAGS = -Wall -g -Wextra -MMD
 
-test: test.o enigma.o rotor.o reflector.o plugboard.o utils.o
-	g++ test.o enigma.o rotor.o reflector.o utils.o plugboard.o -o test.exe
+$(EXE): $(OBJ)
+	$(CXX) $^ -o $@
 
+%.o:%.cpp Makefile
+	$(CXX) $(CXXFLAGS) -c $<
 
-
-
-
-%.o: %.cpp
-	g++ -Wall -g -c $<
-
-plugboard.o: plugboard.hpp utils.hpp errors.h
-
-rotor.o: rotor.hpp utils.hpp errors.h
-
-reflector.o: reflector.hpp utils.hpp errors.h
-
-utils.o: utils.hpp errors.h
-
-test.o: test.cpp utils.hpp
-
-enigma.o: enigma.hpp
+-include $(OBJ:.o=.d)
 
 clean:
-	rm -f *.o *.exe
+	rm -f $(OBJ) $(EXE) $(OBJ:.o=.d)
 
 .PHONY: clean
