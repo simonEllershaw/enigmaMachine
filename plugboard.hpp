@@ -7,10 +7,11 @@
 class Plugboard{
   int mappings[NUM_LETTERS_IN_ALPHABET];
 
-  /* Set all connections to have a value of -1 so it can be detected if they
-    have been set or not later (as -1 is an invalid mapping) */
+  /* Set all connections to VALUE_NOT_SET so it can later be checked if a
+    connection has been set */
   void setDefaultMappings();
-  /* Set mapping from config file */
+
+  /* Set mappings from config file */
   void setMappingsFromFile(std::string configFname);
 
 public:
@@ -22,9 +23,11 @@ public:
   /* Returns plugboard mapping of an index */
   int getForwardMapping(const int index);
 
-  /* Returns plugboard index from an input mapping */
+  /* Returns plugboard index from a mapping */
   int getBackwardMapping(const int mapping);
 
+  /* Outputs a a visual representation of the current state of the plugboard to
+    cout */
   void print();
 };
 

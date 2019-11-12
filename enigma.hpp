@@ -8,42 +8,43 @@
 #include <fstream>
 #include <string>
 
+using namespace std;
+
 class Enigma{
-  std::vector<Rotor*> rotorVector;
+  vector<Rotor*> rotorVector;
   Plugboard* plugboard = nullptr;
   Reflector* reflector = nullptr;
 
   /* Creates rotors using cmd line config files and adds to rotorVector */
-  void setRotorVector(std::string rotorPositionsFname,
-                    std::vector<std::string> rotorFnames);
+  void setRotorVector(string rotorPositionsFname,
+                    vector<string> rotorFnames);
 
-  /* Checks the .pos file supplied is valid, throws exceptions if not */
-  void checkRotorPositionIsValid(std::ifstream& rotorPositionStream,
-                                const int rotorPosition, const int rotorNumber,
-                                std::string errorLocation);
 
    /* Rotates leftmost rotor 1 position, updates rotors to the right if notch at
       the top */
   void rotateRotors();
 
-  public:
-
-  /* Creates Enigma object using files given on cmd line */
-  Enigma(std::string plugboardFname, std::string reflectorFname,
-        std::vector<std::string> rotorFnames, std::string rotorPositionsFname);
-
   /* Returns a single encoded char, also updates internal state of the Enigma
     machine e.g. rotates rotors */
   char encodeChar(char input);
 
-  /* Outputs text representation of the state of the enigma machine to cmd line */
+  public:
+
+  /* Creates Enigma object using files given on cmd line */
+  Enigma(string plugboardFname, string reflectorFname,
+        vector<string> rotorFnames, string rotorPositionsFname);
+
+  /* Takes a line from cin and outputs encrypted message to cout */
+  void IOInterface();
+
+  /* Outputs text representation of the state of the enigma machine to cout*/
   void print();
 
   ~Enigma();
 };
 
 /* Updates rotorFnames vector with the rotor filenames supplied on the cmd line*/
-void getRotorFnamesFromCmdLine(std::vector<std::string>& rotorFnames, int argc,
+void getRotorFnamesFromCmdLine(vector<string>& rotorFnames, int argc,
                               char**argv);
 
 #endif

@@ -1,70 +1,40 @@
 #include "enigma.hpp"
-#include "rotor.hpp"
-#include "plugboard.hpp"
-#include "reflector.hpp"
 #include "errors.h"
+#include "utils.hpp"
 #include<iostream>
 #include <fstream>
 #include <iomanip>
 
+using namespace std;
+
 const int CAP_A_ASCII_VALUE = int('A');
-const int MAX_INPUT_SIZE = 80;
 
-Enigma::Enigma(std::string plugboardFname, std::string reflectorFname,
-              std::vector<std::string> rotorFnames,
-              std::string rotorPositionsFname){
+///////////////////////////// Public Functions ////////////////////////////////
 
+Enigma::Enigma(string plugboardFname, string reflectorFname,
+              vector<string> rotorFnames, string rotorPositionsFname){
   plugboard = new Plugboard(plugboardFname);
   reflector = new Reflector(reflectorFname);
   setRotorVector(rotorPositionsFname, rotorFnames);
 }
 
-void Enigma::setRotorVector(std::string rotorPositionsFname,
-                          std::vector<std::string> rotorFnames){
-  std::ifstream rotorPositionStream;
-  int rotorPosition, rotorNumber = 0;
-  std::string errorLocation = " in rotor positions file " + rotorPositionsFname;
+void Enigma::IOInterface(){
+  string input;
+  getline(cin, input, '\n');
 
-  rotorPositionStream.open(rotorPositionsFname);
-  if(rotorPositionStream.fail()){
-    printErrorMessage("Could not open " + rotorPositionsFname);
-    throw ERROR_OPENING_CONFIGURATION_FILE;
-  }
-
-  auto fname = rotorFnames.begin();
-  rotorPosition = getNextInt(rotorPositionStream, errorLocation);
-  while(!rotorPositionStream.fail() && fname != rotorFnames.end()){
-      checkRotorPositionIsValid(rotorPositionStream, rotorPosition, rotorNumber,
-                                errorLocation);
-      rotorVector.push_back(new Rotor(*fname, rotorPosition));
-      ++fname; //Error for not enough files??
-      rotorNumber++;
-      rotorPosition = getNextInt(rotorPositionStream, errorLocation);
-    }
-  // If when rotorPositionStream fails not all rotors have been initialised
-  // not enough rotor positions where given in the config file
-  if(fname != rotorFnames.end()){
-    printErrorMessage("No starting position for rotor " +
-                      std::to_string(rotorNumber) + " in rotor position file: "
-                      + rotorPositionsFname);
-    throw NO_ROTOR_STARTING_POSITION;
-  }
-}
-
-void Enigma::checkRotorPositionIsValid(std::ifstream& rotorPositionStream,
-                              const int rotorPosition, const int rotorNumber,
-                              std::string errorLocation){
-  if(rotorPosition < 0 || rotorPosition >= NUM_LETTERS_IN_ALPHABET){
-    throw INVALID_INDEX;
+  for(int index = 0; input[index] != '\0'; index++){
+    //Skip whitespace
+    if(input[index] != ' ')
+      cout << encodeChar(input[index]);
   }
 }
 
 void Enigma::print(){
-  std::cout << "Enigma Machine State:" << std::endl;
-  std::cout << std::setw(MAPPING_INDENT) << std::left << "Index: ";
+  cout << "Enigma Machine State:" << endl;
+  cout << setw(MAPPING_INDENT) << left << "Index: ";
   for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-    std::cout << std::setw(DIGIT_SPACING) << std::right  << i;
-  std::cout << std::endl;
+    cout << setw(DIGIT_SPACING) << right  << i;
+  cout << endl;
 
   plugboard->print();
 
@@ -72,36 +42,74 @@ void Enigma::print(){
     (*rotor)->print();
   reflector->print();
 
-  std::cout << "Note: Rightmost rotors at top leftmost at the bottom" << std::endl;
+  cout << "Note: Rightmost rotors at top leftmost at the bottom" << endl;
+}
+
+//////////////////////////// Private Functions ////////////////////////////////
+
+void Enigma::setRotorVector(string rotorPositionsFname,
+                          vector<string> rotorFnames){
+  ifstream rotorPositionStream;
+  int rotorPosition, rotorNumber = 0;
+  string errorLocation = " in rotor positions file " + rotorPositionsFname;
+
+  // Set up vector of rotors reading the starting position from file
+  openConfigFile(rotorPositionsFname, rotorPositionStream);
+  auto fname = rotorFnames.begin();
+  rotorPosition = getNextInt(rotorPositionStream, errorLocation);
+
+  // Ensure still a position and rotorFname to use
+  while(!rotorPositionStream.fail() && fname != rotorFnames.end()){
+      // Check params and put new rotor in vector
+      checkIntWithinAlphabet(rotorPosition, errorLocation);
+      rotorVector.push_back(new Rotor(*fname, rotorPosition));
+      // Get parameters for next rotor
+      ++fname;
+      rotorNumber++;
+      rotorPosition = getNextInt(rotorPositionStream, errorLocation);
+    }
+
+  // If when rotorPositionStream fails not all rotors have been initialised
+  // not enough rotor positions where given in the config file
+  if(fname != rotorFnames.end()){
+    printErrorMessage("No starting position for rotor " +
+                      to_string(rotorNumber) + " in rotor position file: "
+                      + rotorPositionsFname);
+    throw NO_ROTOR_STARTING_POSITION;
+  }
 }
 
 char Enigma::encodeChar(char input){
   int convertedInput;
-
+  // Check input is a capital alphabetic letter
   if(input < 'A' || input >= 'Z'){
-    printErrorMessage(std::string(1, input) + " is not a valid input character"
+    printErrorMessage(string(1, input) + " is not a valid input character"
                       " (input characters must be upper case letters A-Z)!");
     throw INVALID_INPUT_CHARACTER;
   }
-
+  // Note rotor rotated before encoding
   rotateRotors();
 
+  // A maps to 0 and so on
   convertedInput = input - CAP_A_ASCII_VALUE;
 
-
-  // Encoding right to left
+  // Encoding order: Plugboard-> Forward Rotors-> Reflector-> Backward Rotor
+  //                  -> Plugboard
   convertedInput = plugboard->getForwardMapping(convertedInput);
   for(auto rotor = rotorVector.rbegin(); rotor != rotorVector.rend(); ++rotor)
     convertedInput = (*rotor)->getForwardMapping(convertedInput);
   convertedInput = reflector->getMapping(convertedInput);
-  // Encoding left to right
   for(auto rotor = rotorVector.begin(); rotor != rotorVector.end(); ++rotor)
     convertedInput = (*rotor)->getBackwardMapping(convertedInput);
   convertedInput = plugboard->getBackwardMapping(convertedInput);
+
+  // Convert back to a char
   return char(convertedInput + CAP_A_ASCII_VALUE);
 }
 
 void Enigma::rotateRotors(){
+  // Rotate starting rotor 1 position, if notch at the top rotate the next
+  // If no notch at the top end.
   for(auto rotor = rotorVector.rbegin(); rotor != rotorVector.rend(); ++rotor){
     (*rotor)->rotateRotor();
     if(!(*rotor)->aNotchIsAtOrigin())
@@ -116,22 +124,14 @@ Enigma::~Enigma(){
     delete *rotor;
 }
 
+/////////////////////// Free Functions ///////////////////////////////////////
 
-void getRotorFnamesFromCmdLine(std::vector<std::string>& rotorFnames, int argc,
+void getRotorFnamesFromCmdLine(vector<string>& rotorFnames, int argc,
                               char**argv){
-  for(int argNumber = 3; argNumber < argc-1; argNumber++)
+  const int numArgsBeforeRotors = 3, numArgsAfterRotors = 1;
+  for(int argNumber = numArgsBeforeRotors; argNumber < argc-numArgsAfterRotors;
+      argNumber++)
     rotorFnames.push_back(argv[argNumber]);
-}
-
-void IOEnigmaInterface(Enigma* enigma){
-  using namespace std;
-  std::string input;
-  getline(cin, input, '\n');
-
-  for(int index = 0; input[index] != '\0'; index++){
-    if(input[index] != ' ')
-      std::cout << enigma->encodeChar(input[index]);
-  }
 }
 
 int main(int argc, char** argv){
@@ -142,20 +142,21 @@ int main(int argc, char** argv){
       throw INSUFFICIENT_NUMBER_OF_PARAMETERS;
     }
 
-    std::vector<std::string> rotorFnames;
-    std::string plugboardFname = argv[1];
-    std::string reflectorFname = argv[2];
-    std::string rotorPositionsFname = argv[argc-1];
+    //Create Enigma machine
+    vector<string> rotorFnames;
+    string plugboardFname = argv[1];
+    string reflectorFname = argv[2];
+    string rotorPositionsFname = argv[argc-1];
     getRotorFnamesFromCmdLine(rotorFnames, argc, argv);
-
     Enigma* enigma = new Enigma(plugboardFname, reflectorFname, rotorFnames,
                                 rotorPositionsFname);
-
-    IOEnigmaInterface(enigma);
+    // Encode message
+    enigma->IOInterface();
     return 0;
   }
   catch(int e){
     return e;
   }
 }
+
 // ./enigma plugboards/I.pb reflectors/I.rf rotors/I.rot rotors/II.rot rotors/III.rot rotors/I.pos

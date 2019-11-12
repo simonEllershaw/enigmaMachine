@@ -6,47 +6,40 @@
 #include <exception>
 #include <iomanip>
 
+using namespace std;
 
 
 //////////////////////// Public Functions /////////////////////////////////////
 
-Rotor::Rotor(std::string configFname, const int startingPosition){
-  std::ifstream inputStream;
-  std::string errorLocation = " for mapping in rotor file " + configFname;
-  // Nasty bodge to pass testing
-  std::string errorLocation2 = " in rotor file: " + configFname;
+Rotor::Rotor(string configFname, const int startingPosition){
+  ifstream inputStream;
+  string errorLocation = " for mapping in rotor file " + configFname;
 
-  // Non config file dependent setting functions
+  // Non-config file dependent setting functions
   positionAtOrigin = startingPosition;
   setMappingsToNotSet();
 
   // Config file dependent setting functions
-  inputStream.open(configFname);
-  if(inputStream.fail()){
-    printErrorMessage("Could not open " + configFname);
-    throw ERROR_OPENING_CONFIGURATION_FILE;
-  }
-  setMappingsFromFStream(inputStream, errorLocation, errorLocation2);
+  openConfigFile(configFname, inputStream);
+  setMappingsFromFStream(inputStream, errorLocation);
   setNotchesFromFStream(inputStream, errorLocation);
   inputStream.close();
 }
 
 int Rotor::getForwardMapping(const int index){
-  // Check index is betweeen 0-NUM_LETTERS_IN_ALPHABET
-  if(index < 0 || index >= NUM_LETTERS_IN_ALPHABET)
-    throw INVALID_INDEX;
-
+  // Gets mapping from index.
+  // Importantly has to account for what position is the rotor is in and map
+  // any overflow e.g. -1 -> 25
   int positionAdjustedIndex = mapOverflow(index + positionAtOrigin);
-  // Get mapping at index adjusted for position of rotor
+  // Account for position of rotor on output
   return mapOverflow(mappings[positionAdjustedIndex] - positionAtOrigin);
 }
 
 int Rotor::getBackwardMapping(const int mapping){
   int index = 0;
   // Find index of mapping
-  for(; mappings[index] != mapOverflow(mapping + positionAtOrigin)
-      ; index++);
-  // Account for position of rotor
+  for(; mappings[index] != mapOverflow(mapping + positionAtOrigin); index++);
+  // Account for position of rotor on output
   return mapOverflow(index - positionAtOrigin);
 }
 
@@ -55,24 +48,25 @@ bool Rotor::aNotchIsAtOrigin(){
 }
 
 void Rotor::rotateRotor(){
-  positionAtOrigin = mapOverflow(positionAtOrigin + 1); // Not sure if correct direction
+  positionAtOrigin = mapOverflow(positionAtOrigin + 1);
 }
 
 void Rotor::print(){
-  std::cout << std::setw(MAPPING_INDENT) << std::left << "Rotor: ";
+  cout << setw(MAPPING_INDENT) << left << "Rotor: ";
   for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-    std::cout << std::setw(DIGIT_SPACING) << std::right << mappings[i];
-  std::cout << std::endl;
-  std::cout << std::setw(MAPPING_INDENT) << std::left << "Notches: ";
+    cout << setw(DIGIT_SPACING) << right << mappings[i];
+  cout << endl;
+  cout << setw(MAPPING_INDENT) << left << "Notches: ";
   for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-    std::cout << std::setw(DIGIT_SPACING) << std::right << notches[i];
-  std::cout << " Position at origin: " << positionAtOrigin << std::endl;
+    cout << setw(DIGIT_SPACING) << right << notches[i];
+  cout << " Position at origin: " << positionAtOrigin << endl;
 }
 
 
 //////////////////////////// Private Functions ////////////////////////////////
 
 int Rotor::mapOverflow(int index){
+    // Maps -1 -> 25 and 26->0 etc...
     return (index + NUM_LETTERS_IN_ALPHABET) % NUM_LETTERS_IN_ALPHABET;
 }
 
@@ -81,9 +75,7 @@ void Rotor::setMappingsToNotSet(){
     mappings[position] = VALUE_NOT_SET;
   }
 
-void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
-                                std::string errorLocation,
-                                std::string errorLocation2){
+void Rotor::setMappingsFromFStream(ifstream& inputStream, string errorLocation){
   int mapping, index;
   // Allows checking output not already mapped
   int outputMappings[NUM_LETTERS_IN_ALPHABET];
@@ -95,51 +87,45 @@ void Rotor::setMappingsFromFStream(std::ifstream& inputStream,
   for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++){
     mapping = getNextInt(inputStream, errorLocation);
     if(inputStream.fail()){
-      std::cerr << "Not all inputs mapped" + errorLocation2;
+      cerr << "Not all inputs mapped" + errorLocation;
       throw INVALID_ROTOR_MAPPING;
     }
 
-    // Check input mappings within range 0-25
-    if(mapping < 0 || mapping >= NUM_LETTERS_IN_ALPHABET)
-      throw INVALID_INDEX;
+    checkIntWithinAlphabet(mapping, errorLocation);
+
     // Check mapping has not previously been set as output
     if(outputMappings[mapping] != VALUE_NOT_SET){
-          printErrorMessage("Invalid mapping of input " + std::to_string(index)+
-                            " to output " + std::to_string(mapping) +" (output "
-                            + std::to_string(mapping)
+          printErrorMessage("Invalid mapping of input " + to_string(index)+
+                            " to output " + to_string(mapping) +" (output "
+                            + to_string(mapping)
                             + " is already mapped to from input "
-                            + std::to_string(outputMappings[mapping]) + ")"
-                            + errorLocation2);
+                            + to_string(outputMappings[mapping]) + ")"
+                            + errorLocation);
           throw INVALID_ROTOR_MAPPING;
         }
-
     // Update mappings
     mappings[index] = mapping;
     outputMappings[mapping] = index;
     }
 }
 
-void Rotor::setNotchesFromFStream(std::ifstream& inputStream,
-                                std::string errorLocation){
+void Rotor::setNotchesFromFStream(ifstream& inputStream, string errorLocation){
   int notchPosition;
 
   notchPosition = getNextInt(inputStream, errorLocation);
 
   // Get remaing ints from .rot file and assign as notch positions
   while(!inputStream.fail()){
-    // Check input mappings within range 0-25
-    if(notchPosition < 0 || notchPosition >= NUM_LETTERS_IN_ALPHABET)
-      throw INVALID_INDEX;
+    checkIntWithinAlphabet(notchPosition, errorLocation);
     // Check notch only set once
     if(notches[notchPosition]){
+          printErrorMessage("Notch " + to_string(notchPosition) + " has been" +
+                            " set twice" + errorLocation);
           throw INVALID_ROTOR_MAPPING;
         }
 
-    // Update notches
+    // Update and read in next notches
     notches[notchPosition] = true;
-
-    // Read in next indicies
     notchPosition = getNextInt(inputStream, errorLocation);
     }
-
 }

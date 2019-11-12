@@ -3,40 +3,45 @@
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
-#include <exception>
 #include <iomanip>
 
+using namespace std;
 
-Plugboard::Plugboard(std::string configFname){
+//////////////////////////// Public Functions ////////////////////////////////
+
+Plugboard::Plugboard(string configFname){
   setDefaultMappings();
   setMappingsFromFile(configFname);
 }
 
+void Plugboard::print(){
+  cout << setw(MAPPING_INDENT) << left << "Plugboard: ";
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+    cout << setw(DIGIT_SPACING) << right << getForwardMapping(i);
+  cout << endl;
+}
+
+//////////////////////////// Private Functions ////////////////////////////////
 
 void Plugboard::setDefaultMappings(){
-  // Default mapping is each index to itself
+  // Default mapping is each index to itself i.e. 0 to 0
   for(int index = 0; index < NUM_LETTERS_IN_ALPHABET; index ++)
     mappings[index] = index;
 }
 
-
-void Plugboard::setMappingsFromFile(std::string configFname){
-  std::ifstream inputStream;
+void Plugboard::setMappingsFromFile(string configFname){
+  ifstream inputStream;
   int mapping, index;
-  std::string errorLocation = " in plugboard file " + configFname;
+  string errorLocation = " in plugboard file " + configFname;
 
-  inputStream.open(configFname);
-  if(inputStream.fail()){
-    printErrorMessage("Could not open " + configFname);
-    throw ERROR_OPENING_CONFIGURATION_FILE;
-  }
+  openConfigFile(configFname, inputStream);
 
   // Get pairs of ints from file the first is the index and the second the
   // new mapping of that index
   while(!inputStream.fail()){
     index = getNextInt(inputStream, errorLocation);
-    // If EOF here then an even number of ints have been parsed so break without
-    // error
+    // If EOF here then an even number of ints have been parsed
+    // so break without error
     if(inputStream.eof())
       break;
 
@@ -47,14 +52,16 @@ void Plugboard::setMappingsFromFile(std::string configFname){
       throw INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
     }
 
-    // Check input mappings within range 0-25
-    if(index < 0 || index >= NUM_LETTERS_IN_ALPHABET ||
-      mapping < 0 || mapping >= NUM_LETTERS_IN_ALPHABET)
-      throw INVALID_INDEX;
-    // Check not mapping index to itself and that it has not been previously
-    // been set
-    if(index == mapping || mappings[index] != index)
+    checkIntWithinAlphabet(index, errorLocation);
+    checkIntWithinAlphabet(mapping, errorLocation);
+
+    // Check not mapping the index to itself and that it has not been previously
+    // set
+    if(index == mapping || mappings[index] != index){
+      printErrorMessage("The configuration" + errorLocation +
+                        " is impossible.");
       throw IMPOSSIBLE_PLUGBOARD_CONFIGURATION;
+    }
 
     // Update mapping
     mappings[index] = mapping;
@@ -73,11 +80,4 @@ int Plugboard::getBackwardMapping(const int mapping){
   int index = 0;
   for(; mappings[index] != mapping; index++);
   return index;
-}
-
-void Plugboard::print(){
-  std::cout << std::setw(MAPPING_INDENT) << std::left << "Plugboard: ";
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-    std::cout << std::setw(DIGIT_SPACING) << std::right << getForwardMapping(i);
-  std::cout << std::endl;
 }
