@@ -1,9 +1,11 @@
 #include "enigma.hpp"
 #include "errors.h"
 #include "utils.hpp"
+#include "test.hpp"
 #include<iostream>
 #include <fstream>
 #include <iomanip>
+
 
 using namespace std;
 
@@ -136,7 +138,11 @@ void getRotorFnamesFromCmdLine(vector<string>& rotorFnames, int argc,
 
 int main(int argc, char** argv){
   try{
-    if(argc < 4){
+    // Run test programme
+    if(argc == 2 && string(argv[1]) == "test")
+      return testEnigma();
+    // Check correct number of command line args
+    else if(argc < 4){
       printErrorMessage("usage: enigma plugboard-file reflector-file"
                         " (<rotor-file>)* rotor-positions");
       throw INSUFFICIENT_NUMBER_OF_PARAMETERS;

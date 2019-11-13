@@ -1,4 +1,4 @@
-OBJ = enigma.o rotor.o reflector.o plugboard.o utils.o
+OBJ = enigma.o rotor.o reflector.o plugboard.o utils.o test.o
 EXE = enigma
 CXX = g++
 CXXFLAGS = -Wall -g -Wextra -MMD
@@ -6,7 +6,7 @@ CXXFLAGS = -Wall -g -Wextra -MMD
 $(EXE): $(OBJ)
 	$(CXX) $^ -o $@
 
-%.o:%.cpp Makefile
+%.o:%.cpp makefile
 	$(CXX) $(CXXFLAGS) -c $<
 
 -include $(OBJ:.o=.d)

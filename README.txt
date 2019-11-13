@@ -15,6 +15,8 @@ To run:
 
   Note: Can have between 0-N rotors
 
+  ./enigma test will run the test programme
+
 File Types
   Plugboard - Pairs of ints mapping the first int to the second
               By default the input is mapped to itseld

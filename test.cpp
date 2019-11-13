@@ -1,51 +1,77 @@
 #include "rotor.hpp"
 #include "reflector.hpp"
 #include "plugboard.hpp"
-#include <iostream>
 #include "enigma.hpp"
-#include <vector>
+#include <iostream>
+
+using namespace std;
 
 void testPlugboardLoading(const char* configFname, const char* message){
   try{
-    std::cout << message << ":" << std::endl;
+    cout << message << ":" << endl;
     Plugboard testPlugboard = Plugboard(configFname);
     testPlugboard.print();
   }
   catch(int e){
-    std::cout << "Caught an exception " << e << std::endl;;
+    cout << "Error code: " << e << endl;;
   }
+  cout << endl;
 }
+
 
 void testReflectorLoading(const char* configFname, const char* message){
   try{
-    std::cout << message << ":" << std::endl;
+    cout << message << ":" << endl;
     Reflector testReflector = Reflector(configFname);
     testReflector.print();
   }
   catch(int e){
-    std::cout << "Caught an exception " << e << std::endl;;
+    cout << "Error code: " << e << endl;;
   }
+  cout << endl;
 }
 
 
 void testRotorLoading(const char* configFname, const char* message){
   try{
-    std::cout << message << ":" << std::endl;
+    cout << message << ":" << endl;
     Rotor testRotor = Rotor(configFname, 0);
-    std::cout << "Loaded rotor mappings:" << std::endl;
+    cout << "Loaded rotor mappings:" << endl;
     testRotor.print();
   }
   catch(int e){
-    std::cout << "Caught an exception " << e << std::endl;
+    cout << "Error code: " << e << endl;
   }
+  cout << endl;
 }
 
 
-int main(){
+void testRotorFunctionailty(const char* fname){
+  cout << "Rotor Function Testing:" << endl;
+  // Rotor with notch at 0, 13
+  Rotor testRotor = Rotor(fname, 0);
 
-  std::cout << "///////////////// Plugboard Testing //////////////////////////////"
-            << std::endl;
-  std::cout << "Plugboard Loading Testing" << std::endl;
+  cout << "Reverse mappings:" << endl;
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+    cout << i << " ";
+  cout << endl;
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+    cout << testRotor.getBackwardMapping(i) << " ";
+  cout << endl;
+
+  cout << "Current state:" << endl;
+  testRotor.print();
+  testRotor.rotateRotor();
+  cout << "Rotate once:" << endl;
+  testRotor.print();
+}
+
+
+int testEnigma(){
+
+  cout << endl << "///////////////// Plugboard Testing ////////////////////////"
+            << endl;
+  cout << "Plugboard Loading Testing" << endl;
   testPlugboardLoading("plugboards/I.pb",
                     "Success- standard load");
   testPlugboardLoading("testFiles/plugboards/difLines.pb",
@@ -62,11 +88,11 @@ int main(){
                     "Fail- self mapped");
   testPlugboardLoading("testFiles/plugboards/repeatedMapping.pb",
                     "Fail- repeated mappings");
-  std::cout << std::endl;
+  cout << endl;
 
-  std::cout << "///////////////// Reflector Testing //////////////////////////////"
-            << std::endl;
-  std::cout << "Reflector Loading Testing" << std::endl;
+  cout << "///////////////// Reflector Testing ////////////////////////////////"
+            << endl;
+  cout << "Reflector Loading Testing" << endl;
   testReflectorLoading("reflectors/I.rf",
                     "Success- standard load");
   testReflectorLoading("testFiles/reflectors/indicesTooLarge.rf",
@@ -85,11 +111,11 @@ int main(){
                     "Fail- repeated mapping");
   testReflectorLoading("testFiles/reflectors/tooManyInputs.rf",
                     "Fail- too many inputs");
-  std::cout << std::endl;
+  cout << endl;
 
-  std::cout << "///////////////// Rotor Testing //////////////////////////////"
-            << std::endl;
-  std::cout << "Rotor Loading Testing" << std::endl;
+  cout << "////////////////////// Rotor Testing //////////////////////////////"
+            << endl;
+  cout << "Rotor Loading Testing" << endl;
   testRotorLoading("rotors/I.rot",
                     "Success- standard load");
   testRotorLoading("testFiles/rotors/noNotches.rot",
@@ -115,18 +141,9 @@ int main(){
   testRotorLoading("testFiles/rotors/tooSmallerInputNotches.rot",
                     "Fail- too small input notches");
 
-  std::cout << "Rotor Function Testing:" << std::endl;
-  // Rotor with notch at 0, 13
-  Rotor testRotor = Rotor("rotors/V.rot", 0);
+  testRotorFunctionailty("rotors/V.rot");
 
-  std::cout << "Reverse mappings:" << std::endl;
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
-    std::cout << i << " " << testRotor.getBackwardMapping(i) << std::endl;
+  cout << endl;
 
-  std::cout << "Current state:" << std::endl;
-  testRotor.print();
-  testRotor.rotateRotor();
-  std::cout << "Rotate once:" << std::endl;
-  testRotor.print();
-
+  return 0;
 }
