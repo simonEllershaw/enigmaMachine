@@ -5,8 +5,6 @@
 #include <fstream>
 #include <string>
 
-using namespace std;
-
 /* Excellent explanantion of how the rotor works at:
   http://users.telenet.be/d.rijmenants/en/enigmatech.htm */
 
@@ -19,10 +17,10 @@ class Rotor{
   void setMappingsToNotSet();
 
   /* Set mapping from config filestream */
-  void setMappingsFromFStream(ifstream& inputStream, string errorLocation);
+  void setMappingsFromFStream(std::ifstream& inputStream, std::string errorLocation);
 
   /* Set notch values from config filestream */
-  void setNotchesFromFStream(ifstream& inputStream, string errorLocation);
+  void setNotchesFromFStream(std::ifstream& inputStream, std::string errorLocation);
 
   /* Returns the indexed accounting for rotor overflow e.g. -1->25 and 26->0 */
   int mapOverflow(int index);
@@ -34,7 +32,7 @@ public:
   * Config file should be of the form: mapping x26 notch1 notch2 .. notchN
   * See rotors/I.rot for an example
   */
-  Rotor(string configFname, const int startingPosition);
+  Rotor(std::string configFname, const int startingPosition);
 
   /* Returns rotor mapping of an index */
   int getForwardMapping(const int index);

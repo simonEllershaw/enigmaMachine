@@ -2,6 +2,8 @@
 #include "errors.h"
 #include <iostream>
 
+using namespace std;
+
 int getNextInt(std::ifstream& inputStream, std::string errorLocation){
   int nextInt;
   inputStream >> nextInt;

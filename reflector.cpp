@@ -20,16 +20,18 @@ int Reflector::getMapping(const int index){
 
 void Reflector::print(){
   cout << setw(MAPPING_INDENT) << left << "Reflector: ";
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++){
     cout << setw(DIGIT_SPACING) << right << getMapping(i);
+  }
   cout << endl;
 }
 
 /////////////////////////// Private Functions /////////////////////////////////
 
 void Reflector::setMappingsToNotSet(){
-  for(int position = 0; position < NUM_LETTERS_IN_ALPHABET; position ++)
+  for(int position = 0; position < NUM_LETTERS_IN_ALPHABET; position ++){
     mappings[position] = VALUE_NOT_SET;
+  }
 }
 
 void Reflector::setMappingsFromFile(string configFname){

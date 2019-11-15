@@ -34,14 +34,16 @@ void Enigma::IOInterface(){
 void Enigma::print(){
   cout << "Enigma Machine State:" << endl;
   cout << setw(MAPPING_INDENT) << left << "Index: ";
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++){
     cout << setw(DIGIT_SPACING) << right  << i;
+  }
   cout << endl;
 
   plugboard->print();
 
-  for(auto rotor = rotorVector.rbegin(); rotor != rotorVector.rend(); ++rotor)
+  for(auto rotor = rotorVector.rbegin(); rotor != rotorVector.rend(); ++rotor){
     (*rotor)->print();
+  }
   reflector->print();
 
   cout << "Note: Rightmost rotors at top leftmost at the bottom" << endl;
@@ -98,11 +100,13 @@ char Enigma::encodeChar(char input){
   // Encoding order: Plugboard-> Forward Rotors-> Reflector-> Backward Rotor
   //                  -> Plugboard
   convertedInput = plugboard->getForwardMapping(convertedInput);
-  for(auto rotor = rotorVector.rbegin(); rotor != rotorVector.rend(); ++rotor)
+  for(auto rotor = rotorVector.rbegin(); rotor != rotorVector.rend(); ++rotor){
     convertedInput = (*rotor)->getForwardMapping(convertedInput);
+  }
   convertedInput = reflector->getMapping(convertedInput);
-  for(auto rotor = rotorVector.begin(); rotor != rotorVector.end(); ++rotor)
+  for(auto rotor = rotorVector.begin(); rotor != rotorVector.end(); ++rotor){
     convertedInput = (*rotor)->getBackwardMapping(convertedInput);
+  }
   convertedInput = plugboard->getBackwardMapping(convertedInput);
 
   // Convert back to a char
@@ -122,8 +126,9 @@ void Enigma::rotateRotors(){
 Enigma::~Enigma(){
   delete plugboard;
   delete reflector;
-  for(auto rotor = rotorVector.begin(); rotor != rotorVector.end(); ++rotor)
+  for(auto rotor = rotorVector.begin(); rotor != rotorVector.end(); ++rotor){
     delete *rotor;
+  }
 }
 
 /////////////////////// Free Functions ///////////////////////////////////////
@@ -132,8 +137,9 @@ void getRotorFnamesFromCmdLine(vector<string>& rotorFnames, int argc,
                               char**argv){
   const int numArgsBeforeRotors = 3, numArgsAfterRotors = 1;
   for(int argNumber = numArgsBeforeRotors; argNumber < argc-numArgsAfterRotors;
-      argNumber++)
+      argNumber++){
     rotorFnames.push_back(argv[argNumber]);
+  }
 }
 
 int main(int argc, char** argv){

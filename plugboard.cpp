@@ -16,8 +16,9 @@ Plugboard::Plugboard(string configFname){
 
 void Plugboard::print(){
   cout << setw(MAPPING_INDENT) << left << "Plugboard: ";
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++){
     cout << setw(DIGIT_SPACING) << right << getForwardMapping(i);
+  }
   cout << endl;
 }
 
@@ -25,8 +26,9 @@ void Plugboard::print(){
 
 void Plugboard::setDefaultMappings(){
   // Default mapping is each index to itself i.e. 0 to 0
-  for(int index = 0; index < NUM_LETTERS_IN_ALPHABET; index ++)
+  for(int index = 0; index < NUM_LETTERS_IN_ALPHABET; index ++){
     mappings[index] = index;
+  }
 }
 
 void Plugboard::setMappingsFromFile(string configFname){

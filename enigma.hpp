@@ -8,16 +8,14 @@
 #include <fstream>
 #include <string>
 
-using namespace std;
-
 class Enigma{
-  vector<Rotor*> rotorVector;
+  std::vector<Rotor*> rotorVector;
   Plugboard* plugboard = nullptr;
   Reflector* reflector = nullptr;
 
   /* Creates rotors using cmd line config files and adds to rotorVector */
-  void setRotorVector(string rotorPositionsFname,
-                    vector<string> rotorFnames);
+  void setRotorVector(std::string rotorPositionsFname,
+                    std::vector<std::string> rotorFnames);
 
 
    /* Rotates leftmost rotor 1 position, updates rotors to the right if notch at
@@ -31,8 +29,8 @@ class Enigma{
   public:
 
   /* Creates Enigma object using files given on cmd line */
-  Enigma(string plugboardFname, string reflectorFname,
-        vector<string> rotorFnames, string rotorPositionsFname);
+  Enigma(std::string plugboardFname, std::string reflectorFname,
+        std::vector<std::string> rotorFnames, std::string rotorPositionsFname);
 
   /* Takes a line from cin and outputs encrypted message to cout */
   void IOInterface();
@@ -43,8 +41,8 @@ class Enigma{
   ~Enigma();
 };
 
-/* Updates rotorFnames vector with the rotor filenames supplied on the cmd line*/
-void getRotorFnamesFromCmdLine(vector<string>& rotorFnames, int argc,
+/* Updates rotorFnames std::vector with the rotor filenames supplied on the cmd line*/
+void getRotorFnamesFromCmdLine(std::vector<std::string>& rotorFnames, int argc,
                               char**argv);
 
 #endif

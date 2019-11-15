@@ -53,12 +53,14 @@ void Rotor::rotateRotor(){
 
 void Rotor::print(){
   cout << setw(MAPPING_INDENT) << left << "Rotor: ";
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++){
     cout << setw(DIGIT_SPACING) << right << mappings[i];
+  }
   cout << endl;
   cout << setw(MAPPING_INDENT) << left << "Notches: ";
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++){
     cout << setw(DIGIT_SPACING) << right << notches[i];
+  }
   cout << " Position at origin: " << positionAtOrigin << endl;
 }
 
@@ -71,17 +73,19 @@ int Rotor::mapOverflow(int index){
 }
 
 void Rotor::setMappingsToNotSet(){
-  for(int position = 0; position < NUM_LETTERS_IN_ALPHABET; position ++)
+  for(int position = 0; position < NUM_LETTERS_IN_ALPHABET; position ++){
     mappings[position] = VALUE_NOT_SET;
   }
+}
 
 void Rotor::setMappingsFromFStream(ifstream& inputStream, string errorLocation){
   int mapping, index;
   // Allows checking output not already mapped
   int outputMappings[NUM_LETTERS_IN_ALPHABET];
 
-  for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++)
+  for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++){
     outputMappings[index] = VALUE_NOT_SET;
+  }
 
   // Get 26 ints check the int is valid and set as rotor mapping
   for(index = 0; index < NUM_LETTERS_IN_ALPHABET; index++){

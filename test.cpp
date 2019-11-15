@@ -52,11 +52,13 @@ void testRotorFunctionailty(const char* fname){
   Rotor testRotor = Rotor(fname, 0);
 
   cout << "Reverse mappings:" << endl;
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++){
     cout << i << " ";
+  }
   cout << endl;
-  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++)
+  for(int i = 0; i < NUM_LETTERS_IN_ALPHABET; i ++){
     cout << testRotor.getBackwardMapping(i) << " ";
+  }
   cout << endl;
 
   cout << "Current state:" << endl;
